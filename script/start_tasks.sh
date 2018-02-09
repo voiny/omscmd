@@ -14,6 +14,7 @@ do
 	let COUNTER+=1
 	echo TASK ${COUNTER} ${TASKFILE} is starting:
 	./${TASKFILE}
+	echo
 done
 
 echo Started ${TASK_COUNT} tasks.
