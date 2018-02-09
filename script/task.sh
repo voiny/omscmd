@@ -19,7 +19,8 @@ function stop_all() {
 	do
 		let COUNTER+=1
 		echo ${COUNTER}
-		"curl -H 'Content-Type:application/json' --insecure -X PUT --data '{\"operation\":\"stop\"}' https://127.0.0.1:8443/maas/rest/v1/0000000000/obectstorage/changeState/${ID}"
+		RESULT=`curl "https://127.0.0.1:8443/maas/rest/v1/0000000000/objectstorage/changeState/${ID}" --insecure -X PUT --data '{"operation":"stop"}' -H "Content-Type:application/json"`
+		echo ${RESULT}
 	done
 	rm -rf ${WORKSPACE}/tmp_stopall2
 }
@@ -44,11 +45,16 @@ function get_task_status() {
 }
 
 function stop_task() {
-	"curl -H 'Content-Type:application/json' --insecure -X PUT --data '{\"operation\":\"stop\"}' https://127.0.0.1:8443/maas/rest/v1/0000000000/obectstorage/changeState/$1"
+ 	RESULT=`curl "https://127.0.0.1:8443/maas/rest/v1/0000000000/objectstorage/changeState/$1" --insecure -X PUT --data '{"operation":"stop"}' -H "Content-Type:application/json"`
+	echo ${RESULT}
+	get_task_status $1
 }
 
-function resume_task() {
-	"curl -H 'Content-Type:application/json' --insecure -X PUT --data '{\"operation\":\"start\",\"source_ak\":\"${SRCAK}\",\"source_sk\":\"${SRCSK}\",\"target_ak\":\"${DSTAK}\",\"target_sk\":\"${DSTSK}\"}' https://127.0.0.1:8443/maas/ret/v1/0000000000/obectstorage/changeState/$1"
+function restart_task() {
+	DATA="{\"operation\":\"start\",\"source_ak\":\"${SRCAK}\",\"source_sk\":\"${SRCSK}\",\"target_ak\":\"${DSTAK}\",\"target_sk\":\"${DSTSK}\"}"
+ 	RESULT=`curl "https://127.0.0.1:8443/maas/rest/v1/0000000000/objectstorage/changeState/$1" --insecure -X PUT --data "${DATA}" -H "Content-Type:application/json"`
+	echo ${RESULT}
+	get_task_status $1
 }
 
 function help() {
@@ -57,7 +63,7 @@ function help() {
 	echo "		get_all_task_status"
 	echo "		get_task_status taskId"
 	echo "		stop_task taskId"
-	echo "		resume_task taskId"
+	echo "		restart_task taskId"
 }
 
 case $1 in
@@ -73,8 +79,8 @@ case $1 in
 	'stop_task')
 		stop_task $2
 		;;
-	'resume_task')
-		resume_task $2
+	'restart_task')
+		restart_task $2
 		;;
 	*)
 		help

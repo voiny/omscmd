@@ -1,19 +1,19 @@
 #!/bin/bash
 
 export SRCCLOUDTYPE='AWS'
-export SRCREGION='cn-north-1'
-export SRCAK=''
-export SRCSK=''
-export SRCBUCKETNAME=''
-export SRCPATH_SHORT=''
+export SRCREGION='xx-xxxx-1'
+export SRCAK='xxx'
+export SRCSK='xxx'
+export SRCBUCKETNAME='xxx'
+export SRCPATH_SHORT='/xxx/'
 export SRCPATH="s3://${SRCBUCKETNAME}${SRCPATH_SHORT}"
-export DSTREGION='cn-north-1'
-export DSTAK=''
-export DSTSK=''
+export DSTREGION='xx-xxx-1'
+export DSTAK='xxx'
+export DSTSK='xxx'
 #DSTBUCKETNAME should not contain 's3://'
-export DSTBUCKETNAME=''
+export DSTBUCKETNAME='xxx'
 #DSTPATH should not contain 's3://'
-export DSTPATH_SHORT=''
+export DSTPATH_SHORT='xxx/xxx/'
 
 #SRCTOOL = aws s3 / s3cmd
 export SRCTOOL='aws s3'
@@ -23,7 +23,7 @@ export DESC_PREFIX='Migration_Project'
 export WORKSPACE=/tmp/${NAME}
 export OBJ_CNT_IN_SPLIT=10
 export THREAD_PER_TASK=50
-export DB_PWD=''
+export DB_PWD='xxx'
 if [ "${ORIGINAL_DIRECTORY}" == "" ];then
 	export ORIGINAL_DIRECTORY=$(pwd)
 fi
