@@ -9,7 +9,7 @@ TASK_COUNT=`ls -l | wc -l`
 COUNTER=0
 let TASK_COUNT-=1
 
-for TASKFILE in ${TASK_FILES}
+for TASKFILE in ${TASKS_FILES}
 do
 	let COUNTER+=1
 	echo TASK ${COUNTER} ${TASKFILE} is starting:

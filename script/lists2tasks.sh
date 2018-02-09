@@ -6,11 +6,10 @@ cd ${WORKSPACE}/lists/
 rm -rf ${WORKSPACE}/tasktable
 LISTS=`ls`
 
-
 for LINE in ${LISTS}
 do
 	echo converting task: ${LINE}
-	./list2task.sh ${LINE} ${WORKSPACE}/tasktable
+	${ORIGINAL_DIRECTORY}/list2task.sh ${LINE} ${WORKSPACE}/tasktable
 done
 
 rm -rf ${WORKSPACE}/tasks/

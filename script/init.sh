@@ -8,7 +8,9 @@ wget https://bootstrap.pypa.io/get-pip.py
 
 python get-pip.py
 
-if [ "${SRCTOOL}" -eq "s3cmd" ]; then
+cd ${ORIGINAL_DIRECTORY}
+
+if [ "$SRCTOOL" == "s3cmd" ]; then
 	pip install s3cmd
 	./conf_s3cmd.sh
 else

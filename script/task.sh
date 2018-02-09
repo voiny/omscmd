@@ -9,7 +9,7 @@ function exec_sql() {
 
 function stop_all() {
 	SQL="use S3Migration;select id,description from tb_task;"
-	exec_sql ${SQL} > ${WORKSPACE}/tmp_stopall
+	exec_sql "${SQL}" > ${WORKSPACE}/tmp_stopall
 	sed '1d' -i ${WORKSPACE}
 	cat ${WORKSPACE}/tmp_stopall | awk '{print $1}' > ${WORKSPACE}/tmp_stopall2
 	rm -rf tmp_stopall
@@ -26,10 +26,10 @@ function stop_all() {
 
 function get_all_task_status() {
 	SQL="use S3Migration;select id,description,status from tb_task;"
-	if [ "$1" -ne "" ];then
+	if [ "$1" != "" ];then
 		SQL="use S3Migration;select id,description,status from tb_task where status = $1;"
 	fi
-	exec_sql ${SQL}
+	exec_sql "${SQL}"
 	echo
 	echo Status Explaination:
 	echo initializing - 0, waiting - 1, running -2, pause - 3, fail - 4, success - 5, retying - 6
@@ -37,7 +37,9 @@ function get_all_task_status() {
 
 function get_task_status() {
 	SQL="use S3Migration;select id,taskName,description,status from tb_task where id=$1;"
-	exec_sql ${SQL}
+	exec_sql "${SQL}"
+	echo
+	echo Status Explaination:
 	echo initializing - 0, waiting - 1, running -2, pause - 3, fail - 4, success - 5, retying - 6
 }
 
