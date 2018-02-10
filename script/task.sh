@@ -24,7 +24,7 @@ function stop_all() {
 	do
 		let COUNTER+=1
 		echo ${COUNTER}
-		RESULT=`curl "https://127.0.0.1:8099/v1/0000000000/objectstorage/changeState/${ID}" --insecure -X PUT --data '{"operation":"stop"}' -H "Content-Type:application/json"`
+		RESULT=`curl "https://127.0.0.1:8099/v1/0000000000/objectstorage/task/${ID}" --insecure -X PUT --data '{"operation":"stop"}' -H "Content-Type:application/json"`
 		echo ${RESULT}
 	done
 	rm -rf ${WORKSPACE}/tmp_stopall2
@@ -50,14 +50,14 @@ function get_task_status() {
 }
 
 function stop_task() {
- 	RESULT=`curl "https://127.0.0.1:8099/v1/0000000000/objectstorage/changeState/$1" --insecure -X PUT --data '{"operation":"stop"}' -H "Content-Type:application/json"`
+ 	RESULT=`curl "https://127.0.0.1:8099/v1/0000000000/objectstorage/task/$1" --insecure -X PUT --data '{"operation":"stop"}' -H "Content-Type:application/json"`
 	echo ${RESULT}
 	get_task_status $1
 }
 
 function restart_task() {
 	DATA="{\"operation\":\"start\",\"source_ak\":\"${SRCAK}\",\"source_sk\":\"${SRCSK}\",\"target_ak\":\"${DSTAK}\",\"target_sk\":\"${DSTSK}\"}"
- 	RESULT=`curl "https://127.0.0.1:8099/v1/0000000000/objectstorage/changeState/$1" --insecure -X PUT --data "${DATA}" -H "Content-Type:application/json"`
+ 	RESULT=`curl "https://127.0.0.1:8099/v1/0000000000/objectstorage/task/$1" --insecure -X PUT --data "${DATA}" -H "Content-Type:application/json"`
 	echo ${RESULT}
 	get_task_status $1
 }
@@ -66,6 +66,7 @@ function help() {
 	echo "Task Management:"
 	echo "	Parameters:"
 	echo "		get_all_task_status"
+	echo "		stop_all"
 	echo "		get_task_status taskId"
 	echo "		stop_task taskId"
 	echo "		restart_task taskId"
