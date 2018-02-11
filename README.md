@@ -6,5 +6,9 @@
 2. download list: ./download_list.sh
 3. split list into sub lists: ./split_list.sh
 4. convert lists into shell script to start tasks: ./lists2tasks.sh
-5. start tasks: ./start_tasks.sh
+5. start tasks: ./start_tasks.sh <START> <END>, START and END is optional
 6. help information for monitoring tasks: ./task.sh 
+
+## Tips
+1. /tmp/omscmd/ is the workspace by default.
+2. shell scripts for starting tasks are contained in the workspace's subdirectories, these scripts can be executed independently to create task(s).
