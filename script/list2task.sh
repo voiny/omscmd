@@ -10,7 +10,7 @@ ONE_LIST_FILE=$1
 TABLE_FILE=$2
 
 function help() {
-	echo Usage: list2task list_file
+	echo Usage: ./list2task.sh list_file
 }
 
 function convert_list_to_task() {
@@ -34,6 +34,7 @@ function convert_list_to_task() {
 		echo ${ONE_LIST_FILE}	${KEYS} >> ${TABLE_FILE}
 	fi
 }
+
 
 if [ "${ONE_LIST_FILE}" == "" ]; then
 	help
