@@ -23,6 +23,7 @@ if [[ "${START}" == "" || "${END}" == "" ]];then
 		let COUNTER+=1
 		echo TASK ${COUNTER} ${TASKFILE} is starting:
 		cd ${S3ANALYZER_PATH}
+		echo ./s3analyzer.py --cb -t 300 --cfg1 src --cfg2 dst --u1 s3://${SRCBUCKETNAME}${SRCPATH_SHORT} --u2 s3://${DSTBUCKETNAME}/${DSTPATH_SHORT} -i ${WORKSPACE}/lists/${TASKFILE} -o ${COMPARE_RESULT_PATH}/compare_result_${TASKFILE}
 		./s3analyzer.py --cb -t 300 --cfg1 src --cfg2 dst --u1 s3://${SRCBUCKETNAME}${SRCPATH_SHORT} --u2 s3://${DSTBUCKETNAME}/${DSTPATH_SHORT} -i ${WORKSPACE}/lists/${TASKFILE} -o ${COMPARE_RESULT_PATH}/compare_result_${TASKFILE}
 		echo
 	done
@@ -47,6 +48,7 @@ else
 				let COUNTER+=1
 				echo TASK ${COUNTER} ${TASKS_FILES_ARRAY[${idx}]} is starting:
 				cd ${S3ANALYZER_PATH}
+				echo ./s3analyzer.py --cb -t 300 --cfg1 src --cfg2 dst --u1 s3://${SRCBUCKETNAME}${SRCPATH_SHORT} --u2 s3://${DSTBUCKETNAME}/${DSTPATH_SHORT} -i ${WORKSPACE}/lists/${TASKS_FILES_ARRAY[${idx}]} -o ${COMPARE_RESULT_PATH}/compare_result_${TASKS_FILES_ARRAY[${idx}]}
 				./s3analyzer.py --cb -t 300 --cfg1 src --cfg2 dst --u1 s3://${SRCBUCKETNAME}${SRCPATH_SHORT} --u2 s3://${DSTBUCKETNAME}/${DSTPATH_SHORT} -i ${WORKSPACE}/lists/${TASKS_FILES_ARRAY[${idx}]} -o ${COMPARE_RESULT_PATH}/compare_result_${TASKS_FILES_ARRAY[${idx}]}
 				echo 
 			done
