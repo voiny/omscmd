@@ -25,7 +25,7 @@ if [ "${SUBLISTS_PATH}" != "" ];then
 		echo TASK ${COUNTER_LIST} ${LIST_FILE} is starting:
 		let COUNTER_OBJINLIST+=1
 		echo "./s3comparer.py --calculate-size -i ${SUBLISTS_PATH}/${LIST_FILE} &"
-		./s3comparer.py --calculate-size -i ${SUBLISTS_PATH}/${LIST_FILE} -o ${RESULT_PATH}/calculate_${COUNTER_LIST}_${LIST_FILE} -t 1 &
+		./s3comparer.py --calculate-size --cmdpre ${LIST_FILE} -i ${SUBLISTS_PATH}/${LIST_FILE} -o ${RESULT_PATH}/calculate_${COUNTER_LIST}_${LIST_FILE} -t 1 &
 	done
 	wait
 	cat ${RESULT_PATH}/calculate_* >> ${RESULT_PATH}/calculatemerge
