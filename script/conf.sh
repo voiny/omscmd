@@ -4,7 +4,7 @@
 export SRCCLOUDTYPE='OSS'
 #SRCTOOL = aws / ossutil
 export SRCTOOL='ossutil'
-export SRCREGION='oss-cn-hangzhou.aliyuncs.com'
+export SRCREGION=''
 export SRCAK=''
 export SRCSK=''
 export SRCBUCKETNAME=''
