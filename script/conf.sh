@@ -4,11 +4,11 @@
 export SRCCLOUDTYPE='OSS'
 #SRCTOOL = aws / ossutil
 export SRCTOOL='ossutil'
-export SRCREGION=''
-export SRCAK=''
-export SRCSK=''
-export SRCBUCKETNAME=''
-export SRCPATH_SHORT=''
+export SRCREGION='oss-cn-hangzhou.aliyuncs.com'
+export SRCAK='xxx'
+export SRCSK='xxx'
+export SRCBUCKETNAME='xxx'
+export SRCPATH_SHORT='/xxx/'
 export SRCPATH="oss://${SRCBUCKETNAME}${SRCPATH_SHORT}"
 export DSTREGION='xx-xxx-1'
 export DSTAK='xxx'

@@ -14,6 +14,19 @@ COUNTER_OBJINLIST=0
 LIST_FILES=`ls ${LISTS_PATH}`
 LIST_COUNT=`ls ${LISTS_PATH} | wc -l`
 
+function work() {
+	LIST_FILE=$1
+	OBJ=$2
+
+	if [[ "${OBJ}" =~ .*/$ ]]; then
+		echo "${SRCTOOL} ${SRCTOOL_ARG_LS} ${SRCTOOL_ARG_RECURSIVE} ${SRCPREFIX}://${SRCBUCKETNAME}${SRCPATH_SHORT}${OBJ} | tee ${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST} && sed 's#^.*${OBJ}\$##' -i '${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST}' &"
+		${SRCTOOL} ${SRCTOOL_ARG_LS} ${SRCTOOL_ARG_RECURSIVE} ${SRCPREFIX}://${SRCBUCKETNAME}${SRCPATH_SHORT}${OBJ} | tee ${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST} && sed "s#^.*${OBJ}\$##" -i "${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST}" &
+	else
+		echo "${SRCTOOL} ${SRCTOOL_ARG_LS} ${SRCTOOL_ARG_RECURSIVE} ${SRCTOOL_ARG_LIMITED_NUM1} ${SRCPREFIX}://${SRCBUCKETNAME}${SRCPATH_SHORT}${OBJ} | tee ${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST} &"
+		${SRCTOOL} ${SRCTOOL_ARG_LS} ${SRCTOOL_ARG_RECURSIVE} ${SRCTOOL_ARG_LIMITED_NUM1} ${SRCPREFIX}://${SRCBUCKETNAME}${SRCPATH_SHORT}${OBJ} | tee ${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST} &
+	fi
+}
+
 if [[ "${START}" == "" || "${END}" == "" ]];then
 	for LIST_FILE in ${LIST_FILES}
 	do
@@ -23,22 +36,9 @@ if [[ "${START}" == "" || "${END}" == "" ]];then
 		for OBJ in ${LIST}
 		do
 			let COUNTER_OBJINLIST+=1
-			if [[ "${OBJ}" =~ ".*/$" ]]; then
-				echo "${SRCTOOL} ${SRCTOOL_ARG_LS} ${SRCTOOL_ARG_RECURSIVE} ${SRCPREFIX}://${SRCBUCKETNAME}${SRCPATH_SHORT}${OBJ} | tee ${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST} &"
-				${SRCTOOL} ${SRCTOOL_ARG_LS} ${SRCTOOL_ARG_RECURSIVE} ${SRCPREFIX}://${SRCBUCKETNAME}${SRCPATH_SHORT}${OBJ} | tee ${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST} &
-			else
-				echo "${SRCTOOL} ${SRCTOOL_ARG_LS} ${SRCTOOL_ARG_RECURSIVE} ${SRCTOOL_ARG_LIMITED_NUM1} ${SRCPREFIX}://${SRCBUCKETNAME}${SRCPATH_SHORT}${OBJ} | tee ${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST} &"
-				${SRCTOOL} ${SRCTOOL_ARG_LS} ${SRCTOOL_ARG_RECURSIVE} ${SRCTOOL_ARG_LIMITED_NUM1} ${SRCPREFIX}://${SRCBUCKETNAME}${SRCPATH_SHORT}${OBJ} | tee ${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST} &
-
-			fi
+			work ${LIST_FILE} "${OBJ}"
 		done
 	done
-	wait
-	sed '1d' -i ${RESULT_PATH}/sublist_*
-	sed '/^\s*$/d' -i ${RESULT_PATH}/sublist_*
-	sed '$d' -i ${RESULT_PATH}/sublist_*
-	sed '$d' -i ${RESULT_PATH}/sublist_*
-	cat ${RESULT_PATH}/sublist_* > ${WORKSPACE}/sublist_result_all
 else
 	echo
 	idx=0
@@ -66,24 +66,22 @@ else
 				for OBJ in ${LIST}
 				do
 					let COUNTER_OBJINLIST+=1
-					if [[ "${OBJ}" =~ ".*/$" ]]; then
-						echo "${SRCTOOL} ${SRCTOOL_ARG_LS} ${SRCTOOL_ARG_RECURSIVE} ${SRCPREFIX}://${SRCBUCKETNAME}${SRCPATH_SHORT}${OBJ} | tee ${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST} &"
-						${SRCTOOL} ${SRCTOOL_ARG_LS} ${SRCTOOL_ARG_RECURSIVE} ${SRCPREFIX}://${SRCBUCKETNAME}${SRCPATH_SHORT}${OBJ} | tee ${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST} &
-					else
-						echo "${SRCTOOL} ${SRCTOOL_ARG_LS} ${SRCTOOL_ARG_RECURSIVE} ${SRCTOOL_ARG_LIMITED_NUM1} ${SRCPREFIX}://${SRCBUCKETNAME}${SRCPATH_SHORT}${OBJ} | tee ${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST} &"
-						${SRCTOOL} ${SRCTOOL_ARG_LS} ${SRCTOOL_ARG_RECURSIVE} ${SRCTOOL_ARG_LIMITED_NUM1} ${SRCPREFIX}://${SRCBUCKETNAME}${SRCPATH_SHORT}${OBJ} | tee ${RESULT_PATH}/sublist_${LIST_FILE}_${COUNTER_LIST}_${COUNTER_OBJINLIST} &
-
-					fi
+					work ${LIST_FILE} "${OBJ}"
 				done
 			done
 		fi
 	fi
-	wait
-	sed '1d' -i ${RESULT_PATH}/sublist_*
-	sed '/^\s*$/d' -i ${RESULT_PATH}/sublist_*
-	sed '$d' -i ${RESULT_PATH}/sublist_*
-	sed '$d' -i ${RESULT_PATH}/sublist_*
-	cat ${RESULT_PATH}/sublist_* > ${WORKSPACE}/sublist_result_${START}_to_${END}
 fi
 
+wait
+sed '1d' -i ${RESULT_PATH}/sublist_*
+sed '/^\s*$/d' -i ${RESULT_PATH}/sublist_*
+sed '$d' -i ${RESULT_PATH}/sublist_*
+sed '$d' -i ${RESULT_PATH}/sublist_*
+
+if [[ "${START}" == "" || "${END}" == "" ]];then
+	cat ${RESULT_PATH}/sublist_* > ${WORKSPACE}/sublist_result_all
+else
+	cat ${RESULT_PATH}/sublist_* > ${WORKSPACE}/sublist_result_${START}_to_${END}
+fi
 
