@@ -3,11 +3,10 @@
 source ./env.sh
 export PATH=$PATH:/usr/bin
 
-ossutil config>/dev/null<<EOF
-${SRCREGION}
-${SRCAK}
-${SRCSK}
-
-EOF
+echo [Credentials] > /root/.ossutilconfig
+echo language=EN >> /root/.ossutilconfig
+echo endpoint=${SRCREGION}.aliyuncs.com >> /root/.ossutilconfig
+echo accessKeyID=${SRCAK} >> /root/.ossutilconfig
+echo accessKeySecret=${SRCSK} >> /root/.ossutilconfig
 
 ossutil ls
