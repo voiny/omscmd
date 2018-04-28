@@ -35,11 +35,11 @@ if [ "${SRCTOOL}" == "ossutil" ];then
 	export SRCTOOL_ARG_RECURSIVE=''
 	export SRCTOOL_ARG_NONRECURSIVE='-d'
 	export SRCTOOL_ARG_LIMITED_NUM1='--limited-num 1'
-	export SRCTOOL_ARG_LS='ls -e aaaa.aliyuncs.com'
+	export SRCTOOL_ARG_LS='ls'
 elif [ "${SRCTOOL}" == "aws" ];then
 	export SRCPREFIX='s3'
 	export SRCTOOL_ARG_RECURSIVE='--recursive'
 	export SRCTOOL_ARG_NONRECURSIVE=''
 	export SRCTOOL_ARG_LIMITED_NUM1=''
-	export SRCTOOL_ARG_LS='ls -e aaaa.aliyuncs.com'
+	export SRCTOOL_ARG_LS='s3 ls'
 fi
