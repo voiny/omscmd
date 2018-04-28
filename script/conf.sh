@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# AWS / OSS
-export SRCCLOUDTYPE='OSS'
+# AWS / Aliyun-OSS
+export SRCCLOUDTYPE='Aliyun'
 #SRCTOOL = aws / ossutil
 export SRCTOOL='ossutil'
 export SRCREGION='oss-cn-hangzhou'
@@ -18,6 +18,7 @@ export DSTBUCKETNAME='xxx'
 #DSTPATH should not contain 's3://'
 export DSTPATH_SHORT='xxx/xxx/'
 
+export SERVER_ADDRESS="https://127.0.0.1:8099/v1/0000000000/objectstorage/task"
 export NAME='omscmd'
 export ENABLE_KMS='false'
 export DESC_PREFIX='Migration_Project'
