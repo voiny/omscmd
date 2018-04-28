@@ -4,7 +4,7 @@
 export SRCCLOUDTYPE='Aliyun'
 #SRCTOOL = aws / ossutil
 export SRCTOOL='ossutil'
-export SRCREGION='oss-cn-hangzhou'
+export SRCREGION='cn-hangzhou'
 export SRCAK=''
 export SRCSK=''
 export SRCBUCKETNAME='api-auto-test'
