@@ -12,3 +12,6 @@
 ## Tips
 1. /tmp/omscmd/ is the workspace by default.
 2. shell scripts for starting tasks are contained in the workspace's subdirectories, these scripts can be executed independently to create task(s).
+
+## Others
+1. aws s3 --endpoint-url=http://xxx --region=xxx ls xxx --recursive
