@@ -4,7 +4,9 @@ import traceback
 import pdb
 import threading
 import datetime
-import thread
+#import thread
+import os
+import glob
 
 BIG_DIC = {}
 THREADS = []
@@ -12,7 +14,7 @@ TMP_WORKSPACE = "/tmp/langyu/"
 SUB_FILES_DIR = "sub_files/"
 SUB_FILE = "sub_file"
 RESULT_FILES_DIR = "result_files/"
-RESULT_SUB_FILE = "result_sub_file"
+RESULT_SUB_DIFF_FILE = "result_diff_file"
 RESULT_SUB_SAME_FILE = "result_same_file"
 
 
@@ -20,27 +22,40 @@ PARSER = OptionParser()
 PARSER.add_option("-s","--src_file",action="store", dest="src_file",help="write oss src file path.")
 PARSER.add_option("-d","--dest_file",action="store",dest="dest_file",help="write obs dest file path.")
 PARSER.add_option("-n","--thread_number",action="store",dest="thread_number",help="write current thread number.")
+PARSER.add_option("-e","--enable_size_comparsion",action="store",dest="size_enable",help="enable size comparsion setting.")
 (options, args) = PARSER.parse_args()
 
 DEST_FILE = options.dest_file
 SRC_FILE = options.src_file
 THREAD_NUM = options.thread_number
+SIZE_ENABLE = options.size_enable
+
+def clear_tmp_file():
+	s_files = glob.glob(TMP_WORKSPACE+SUB_FILES_DIR+"/*")
+	for f in s_files:
+		os.remove(f)
+	r_files = glob.glob(TMP_WORKSPACE+RESULT_FILES_DIR+"/*")
+	for f in r_files:
+		os.remove(f)
 
 # load the destfile into dic
 def generate_dst_big_dic(destfile):
 	try:
 		file = open(destfile)
 		while 1:
-			#lines = file.readlines()
 			line = file.readline()
 			if not line:	
 				break
 			else:	
 				#for line in lines:
 				parts = line.split( )
-				name = parts[len(parts)-1]
-				size = parts[len(parts)-2]
-				BIG_DIC[name]=size
+				time = parts[0]
+				name = parts[1]
+				size = parts[2]
+				if not SIZE_ENABLE or SIZE_ENABLE != "true":
+					BIG_DIC[name]=time
+				else: 
+					BIG_DIC[name+size]=time
 	finally:
 		if file:
 			file.close()
@@ -94,7 +109,7 @@ def split_file(file_name, split_num):
 
 def compare_object(file_name, dic, num):
 	try: 
-		sub_diff_file = open(TMP_WORKSPACE + RESULT_FILES_DIR + RESULT_SUB_FILE + num +".txt",'w')
+		sub_diff_file = open(TMP_WORKSPACE + RESULT_FILES_DIR + RESULT_SUB_DIFF_FILE + num +".txt",'w')
 		sub_same_file = open(TMP_WORKSPACE + RESULT_FILES_DIR + RESULT_SUB_SAME_FILE + num +".txt",'w')
 		try:
 			with open(file_name) as tmp_file:
@@ -104,8 +119,15 @@ def compare_object(file_name, dic, num):
                 				break
         				for line in lines:
                 				parts = line.split( )
-                				name = parts[len(parts)-1]
-                				if(dic.has_key(name)):
+						time = parts[0]
+                				name = parts[1]
+						size = parts[2]
+						if not SIZE_ENABLE or SIZE_ENABLE!="true":
+							key = name
+						else:
+							key = name+size
+                				#if(dic.has_key(key) and dic[key] < time):
+                				if(dic.has_key(key) and time >= dic[key]):
 							sub_same_file.write(name+'\n')
 						else:
 							sub_diff_file.write(name+'\n')
@@ -116,14 +138,16 @@ def compare_object(file_name, dic, num):
 		pass
 		#if tmp_file:
 			#tmp_file.close()
-		#if sub_diff_file:
-			#sub_diff_file.close()
-		#if sub_same_file:
-			#sub_same_file.close()
+		if sub_diff_file:
+			sub_diff_file.close()
+		if sub_same_file:
+			sub_same_file.close()
 
 
 if __name__ == '__main__':
 	#pdb.set_trace()
+	print str(datetime.datetime.now()) + "   start clearing the tmp dir files ..."
+	clear_tmp_file()
 	print str(datetime.datetime.now()) + "   start loading the map ..."
 	generate_dst_big_dic(DEST_FILE)
 	print str(datetime.datetime.now()) + "   finish loading the map ..."
@@ -154,16 +178,3 @@ if __name__ == '__main__':
 #	except:
 #		pass
 
-'''
-#	print MAP.keys()
-#	print MAP.values()
-#	print get_file_line_num(DEST_FILE)
-#	list =  split_file(SRC_FILE,3)	'
-	t = threading.Thread(target=compare_object, args=(SRC_FILE, MAP))
-	THREADS.append(t)
-	for t in THREADS:
-		t.start()
-
-	for t in THREADS:
-		t.join()
-'''
