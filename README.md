@@ -14,13 +14,6 @@
 2. output - ${WORKSPACE}/converted_list
 
 ## Compare
-1. [compare command] -s source_file -d destination_file -o output_difference (--compare-size/--compare-time)
-
-## Tips
-1. /tmp/omscmd/ is the workspace by default.
-2. shell scripts for starting tasks are contained in the workspace's subdirectories, these scripts can be executed independently to create task(s).
-
-## oms_compare.py tips
 1. before using ,please udpate TMP_WORKSPACE file to your prefered workspace;
 2. parameter specification:
     2.1 -s: src file path, for oss;
@@ -30,8 +23,11 @@
 3. after execution, go to TMP_WORKSPACE/result_files for result'
     3.1 result_same_file.txt for same object;
     3.2 result_diff_file.txt for different object;
-   
 4. executiong demo: python oms_compare.py -s src_file -d dst_file -n 2 -e true
 
+## Tips
+1. /tmp/omscmd/ is the workspace by default.
+2. shell scripts for starting tasks are contained in the workspace's subdirectories, these scripts can be executed independently to create task(s).
+
 ## Others
-1. aws s3 --endpoint-url=http://xxx --region=xxx ls xxx --recursive
+1. Usage of aws client: aws s3 --endpoint-url=http://xxx --region=xxx ls xxx --recursive

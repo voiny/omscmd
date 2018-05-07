@@ -7,18 +7,18 @@ export SRCTOOL='ossutil'
 export SRCREGION='cn-beijing'
 export SRCAK=''
 export SRCSK=''
-export SRCBUCKETNAME='ys-public'
+export SRCBUCKETNAME='xx-public'
 export SRCPATH_SHORT='/'
 export SRCPATH="oss://${SRCBUCKETNAME}${SRCPATH_SHORT}"
 export DSTREGION='cn-north-1'
 export DSTAK=''
 export DSTSK=''
 #DSTBUCKETNAME should not contain 's3://'
-export DSTBUCKETNAME='huawei-liuchang'
+export DSTBUCKETNAME='xxx'
 #DSTPATH should not contain 's3://'
-export DSTPATH_SHORT='/test/'
+export DSTPATH_SHORT='/xx/'
 
-export SERVER_ADDRESS="https://oms.myhuaweicloud.com/v1/5b95ccb91ab84eaaa1b6a946a10f522c/objectstorage/task"
+export SERVER_ADDRESS="https://oms.myhuaweicloud.com/v1/{project_id}/objectstorage/task"
 export NAME='omscmd'
 export ENABLE_KMS='false'
 export DESC_PREFIX='Migration_Project'
