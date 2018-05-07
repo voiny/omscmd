@@ -1,6 +1,6 @@
 # omscmd
 
-## Usage
+## Basic Usage
 0. configure: vim ./conf.sh
 1. install: ./init.sh
 2. download list: ./download_list.sh
@@ -8,6 +8,13 @@
 4. convert lists into shell script to start tasks: ./lists2tasks.sh
 5. start tasks: ./start_tasks.sh <START> <END>, START and END is optional
 6. help information for monitoring tasks: ./task.sh 
+
+## Convert Format
+1. ./convert_lists_format (awscli/ossutil/customized1/...) (remove_string)
+2. output - ${WORKSPACE}/converted_list
+
+## Compare
+1. [compare command] -s source_file -d destination_file -o output_difference (--compare-size/--compare-time)
 
 ## Tips
 1. /tmp/omscmd/ is the workspace by default.
@@ -25,3 +32,6 @@
     3.2 result_diff_file.txt for different object;
    
 4. executiong demo: python oms_compare.py -s src_file -d dst_file -n 2 -e true
+
+## Others
+1. aws s3 --endpoint-url=http://xxx --region=xxx ls xxx --recursive
