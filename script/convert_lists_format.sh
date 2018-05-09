@@ -22,3 +22,4 @@ wait
 
 cat ${WORKSPACE}/converted_lists/* > ${WORKSPACE}/converted_list
 echo Converted ${COUNT} lists into standard fomrat.
+cd ${ORIGINAL_DIRECTORY}

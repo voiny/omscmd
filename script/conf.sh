@@ -3,7 +3,7 @@
 # AWS / Aliyun-OSS
 export SRCCLOUDTYPE='Aliyun'
 #SRCTOOL = aws / ossutil
-export SRCTOOL='ossutil'
+export SRCTOOL='aws'
 export SRCREGION='cn-beijing'
 export SRCAK=''
 export SRCSK=''
@@ -22,7 +22,7 @@ export SERVER_ADDRESS="https://oms.myhuaweicloud.com/v1/{project_id}/objectstora
 export NAME='omscmd'
 export ENABLE_KMS='false'
 export DESC_PREFIX='Migration_Project'
-export WORKSPACE=/tmp/${NAME}
+export WORKSPACE=/data/tmp/${NAME}
 export OBJ_CNT_IN_SPLIT=1000000
 export THREAD_PER_TASK=50
 export DB_PWD='xxx'

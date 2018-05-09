@@ -17,3 +17,4 @@ if [ ${COUNT} -eq -1 ];then
 	let COUNT=0
 fi
 echo Count of Lists: ${COUNT}
+cd ${ORIGINAL_DIRECTORY}
