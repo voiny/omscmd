@@ -25,12 +25,15 @@ PARSER.add_option("-s","--src_file",action="store", dest="src_file",help="write 
 PARSER.add_option("-d","--dest_file",action="store",dest="dest_file",help="write obs dest file path.")
 PARSER.add_option("-n","--thread_number",action="store",dest="thread_number",help="write current thread number.")
 PARSER.add_option("-e","--enable_size_comparsion",action="store",dest="size_enable",help="enable size comparsion setting.")
+PARSER.add_option("-w","--workspace_path",action="store",dest="workspace_path",help="path of workspace, /data/tmp/compare/ e.g.")
 (options, args) = PARSER.parse_args()
 
 DEST_FILE = options.dest_file
 SRC_FILE = options.src_file
 THREAD_NUM = options.thread_number
 SIZE_ENABLE = options.size_enable
+if options.workspace_path:
+	TMP_WORKSPACE = options.workspace_path
 
 def clear_tmp_file():
 	if os.path.exists(TMP_WORKSPACE+SUB_FILES_DIR) :
@@ -45,7 +48,7 @@ def clear_tmp_file():
 		for f in r_files:
 			os.remove(f)
 	else:	
-		os.mkdir(TMP_WORKSPACE+RESULT_FILES_DIR)
+		os.makedirs(TMP_WORKSPACE+RESULT_FILES_DIR)
 
 # load the destfile into dic
 def generate_dst_big_dic(destfile):
