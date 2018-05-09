@@ -4,6 +4,7 @@ cd script
 source ./env.sh
 export PATH=$PATH:/usr/bin
 cd ..
+
 OUTPUT_PATH=$1
 
 function usage()
