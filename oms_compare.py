@@ -52,6 +52,7 @@ def clear_tmp_file():
 
 # load the destfile into dic
 def generate_dst_big_dic(destfile):
+	file = None
 	try:
 		file = open(destfile)
 		while 1:

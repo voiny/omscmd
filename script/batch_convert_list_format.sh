@@ -39,6 +39,6 @@ do
 		${ORIGINAL_DIRECTORY}/split_list.sh
 		${ORIGINAL_DIRECTORY}/convert_lists_format.sh ${TYPE}
 	fi
-	mv ${WORKSPACE}/converted_list ${OUTPUT_PATH}/${LINE}_${TYPE}_converted_list
+	mv ${WORKSPACE}/converted_list ${OUTPUT_PATH}/${LINE}_converted_list
 done
 
