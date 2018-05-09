@@ -10,7 +10,7 @@ import glob
 
 BIG_DIC = {}
 THREADS = []
-TMP_WORKSPACE = "/root/omscmd/"
+TMP_WORKSPACE = "/data/tmp/omscompare/"
 SUB_FILES_DIR = "sub_files/"
 SUB_FILE = "sub_file"
 RESULT_FILES_DIR = "result_files/"
@@ -38,7 +38,7 @@ def clear_tmp_file():
 		for f in s_files:
 			os.remove(f)
 	else:
-		os.mkdir(TMP_WORKSPACE+SUB_FILES_DIR)
+		os.makedirs(TMP_WORKSPACE+SUB_FILES_DIR)
 
 	if os.path.exists(TMP_WORKSPACE+RESULT_FILES_DIR) :
 		r_files = glob.glob(TMP_WORKSPACE+RESULT_FILES_DIR+"/*")

@@ -10,5 +10,5 @@ source ./conf.sh
 LINE=$1
 REMOVE_STRING=$2
 cd ${WORKSPACE}/lists
-cat ${LINE} | awk '{ for (i=2;i<NF;i++) printf $i " " ; printf "\n"}' > ${WORKSPACE}/converted_lists/${LINE}_converted_format
+cat ${LINE} | awk '{ for (i=2;i<NF;i++) printf("%s ", $i); printf "\n"}' > ${WORKSPACE}/converted_lists/${LINE}_converted_format
 
