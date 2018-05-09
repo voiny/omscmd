@@ -3,7 +3,7 @@
 # AWS / Aliyun-OSS
 export SRCCLOUDTYPE='Aliyun'
 #SRCTOOL = aws / ossutil
-export SRCTOOL='aws'
+export SRCTOOL='ossutil'
 export SRCREGION='cn-beijing'
 export SRCAK=''
 export SRCSK=''
