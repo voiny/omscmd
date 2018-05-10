@@ -16,6 +16,8 @@ if [ "${OUTPUT_PATH}" == "" ];then
 	exit
 fi
 
+export PYTHONIOENCODING=UTF-8
+
 mkdir -p ${OUTPUT_PATH}
 for i in $*; do
 	bucket_name=`echo $i | awk -F, '{print $1;}'`
