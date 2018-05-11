@@ -80,28 +80,18 @@ def split_file(file_name, split_num):
 	sub_line = total_line_num/int(split_num) + 1
 	sub_file_list =[]
 	i = 0
-	file = None
-	try:
-		with open(file_name) as file:
-			while i < int(split_num):
-				sub_file_name = TMP_WORKSPACE + SUB_FILES_DIR + SUB_FILE + str(i) + ".txt"
-				sub_f = None
-				try:
-					with open(sub_file_name, 'w') as sub_f:
-						for num in range(sub_line):
-							line = file.readline()
-							if not line:
-								break
-							else:
-								sub_f.write(line)
-				finally:
-					if sub_f:
-						sub_f.close()
-				i += 1
-				sub_file_list.append(sub_file_name)
-	finally:
-		if file:
-			file.close()
+	with open(file_name) as file:
+		while i < int(split_num):
+			sub_file_name = TMP_WORKSPACE + SUB_FILES_DIR + SUB_FILE + str(i) + ".txt"
+			with open(sub_file_name, 'w') as sub_f:
+				for num in range(sub_line):
+					line = file.readline()
+					if not line:
+						break
+					else:
+						sub_f.write(line)
+			i += 1
+			sub_file_list.append(sub_file_name)
 	return sub_file_list
 
 def compare_object(file_name, dic, num, compare_time = False):
@@ -110,52 +100,36 @@ def compare_object(file_name, dic, num, compare_time = False):
 	try: 
 		sub_diff_file = open(TMP_WORKSPACE + RESULT_FILES_DIR + RESULT_SUB_DIFF_FILE + num +".txt",'w')
 		sub_same_file = open(TMP_WORKSPACE + RESULT_FILES_DIR + RESULT_SUB_SAME_FILE + num +".txt",'w')
-		tmp_file = None
-		try:
-			with open(file_name) as tmp_file:
-				if compare_time == False:
-					while 1:
-						lines = tmp_file.readlines()
-        					if not lines:
-                					break
-        					for line in lines:
-                					parts = line.split( )
-							time = parts[0]
-                					name = parts[1]
-							size = parts[2]
-							if SIZE_ENABLE != True:
-								key = name
-							else:
-								key = name+size
-                					if(dic.has_key(key)):
-								sub_same_file.write(time + " " + name + " " + size +'\n')
-							else:
-								sub_diff_file.write(time + " " + name + " " + size +'\n')
-				else:
-					while 1:
-						lines = tmp_file.readlines()
-        					if not lines:
-                					break
-        					for line in lines:
-                					parts = line.split( )
-							time = parts[0]
-                					name = parts[1]
-							size = parts[2]
-							if SIZE_ENABLE != True:
-								key = name
-							else:
-								key = name+size
-                					if(dic.has_key(key) and time <= dic[key]):
-								sub_same_file.write(time + " " + name + " " + size +'\n')
-							else:
-								sub_diff_file.write(time + " " + name + " " + size +'\n')
-		finally:
-			if tmp_file:
-				tmp_file.close()
+		with open(file_name) as tmp_file:
+			if compare_time == False:
+				for line in tmp_file:
+					parts = line.split( )
+					time = parts[0]
+        				name = parts[1]
+					size = parts[2]
+					if SIZE_ENABLE != True:
+						key = name
+					else:
+						key = name+size
+        				if(dic.has_key(key)):
+						sub_same_file.write(time + " " + name + " " + size +'\n')
+					else:
+						sub_diff_file.write(time + " " + name + " " + size +'\n')
+			else:
+				for line in tmp_file:
+					parts = line.split( )
+					time = parts[0]
+        				name = parts[1]
+					size = parts[2]
+					if SIZE_ENABLE != True:
+						key = name
+					else:
+						key = name+size
+        				if(dic.has_key(key) and time <= dic[key]):
+						sub_same_file.write(time + " " + name + " " + size +'\n')
+					else:
+						sub_diff_file.write(time + " " + name + " " + size +'\n')
 	finally:
-		pass
-		#if tmp_file:
-			#tmp_file.close()
 		if sub_diff_file:
 			sub_diff_file.close()
 		if sub_same_file:
@@ -163,32 +137,20 @@ def compare_object(file_name, dic, num, compare_time = False):
 	print("thread-" + str(num) + " exited.\n")
 
 def combine_result(number):
+	diff_file = None
+	same_file = None
 	try:	
 		diff_file = open(TMP_WORKSPACE + RESULT_FILES_DIR + RESULT_DIFF_FILE,'w')
 		same_file = open(TMP_WORKSPACE + RESULT_FILES_DIR + RESULT_SAME_FILE,'w')
 		for i in range(int(number)):
 			tmp_sub_diff_file = None;
 			tmp_sub_same_file = None;
-			try:
-				with open(TMP_WORKSPACE + RESULT_FILES_DIR + RESULT_SUB_DIFF_FILE + str(i) +".txt","r") as tmp_sub_diff_file:
-					while 1:
-						lines = tmp_sub_diff_file.readlines()
-						if not lines:
-							break
-						for line in lines:
-							diff_file.write(line)
-				with open(TMP_WORKSPACE + RESULT_FILES_DIR + RESULT_SUB_SAME_FILE + str(i) + ".txt","r") as tmp_sub_same_file:
-					while 1:
-						lines = tmp_sub_same_file.readlines()
-						if not lines:
-							break
-						for line in lines:
-							same_file.write(line)
-			finally:
-				if tmp_sub_diff_file:
-					tmp_sub_diff_file.close()
-				if tmp_sub_same_file:
-					tmp_sub_same_file.close()
+			with open(TMP_WORKSPACE + RESULT_FILES_DIR + RESULT_SUB_DIFF_FILE + str(i) +".txt","r") as tmp_sub_diff_file:
+				for line in tmp_sub_diff_file:
+					diff_file.write(line)
+			with open(TMP_WORKSPACE + RESULT_FILES_DIR + RESULT_SUB_SAME_FILE + str(i) + ".txt","r") as tmp_sub_same_file:
+				for line in tmp_sub_same_file:
+					same_file.write(line)
 	finally:
 		if diff_file:
 			diff_file.close()
