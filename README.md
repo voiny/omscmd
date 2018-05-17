@@ -25,6 +25,10 @@
     3.2 result_diff_file.txt for different object;
 4. executiong demo: python oms_compare.py -s src_file -d dst_file -n 2 -e true
 
+## Tools
+### Quick Compare
+1. ./quick_compare.py -s /data/testdata2  -o /data/test.txt --separate_time "2018-05-10 00:00:00" --section_size 100 -t 100
+
 ## Tips
 1. /tmp/omscmd/ is the workspace by default.
 2. shell scripts for starting tasks are contained in the workspace's subdirectories, these scripts can be executed independently to create task(s).

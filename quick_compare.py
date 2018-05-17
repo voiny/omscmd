@@ -152,9 +152,12 @@ def put_dictionary_into_queue(dictionary, queue, lock):
 def is_time_a_after_b(time_a, time_b):
 	return time_a > time_b
 
-def read_object_list(bucket, after_marker, max_keys):
-	result = oss2.ObjectIterator(bucket, max_keys=SECTION_SIZE, marker=after_marker)
-	return result,  islice(result, max_keys)
+def read_object_list(bucket, after_marker, input_max_keys):
+	real_max_keys = input_max_keys
+	if (input_max_keys > 1000):
+		real_max_keys = 1000
+	result = oss2.ObjectIterator(bucket, max_keys=real_max_keys, marker=after_marker)
+	return result, islice(result, input_max_keys)
 
 def format_object(obj):
 	last_modified = str(obj.last_modified)
@@ -171,6 +174,7 @@ def worker(worker_name, dictionary, queue, lock):
 	print ("Worker: " + worker_name + " started.")
 	with open(WORKSPACE + "/" + worker_name, "a") as output_file:
 		print ("key: " + key)
+		got_empty_return = False
 		while True:
 			if key == None:
 				break
@@ -182,9 +186,15 @@ def worker(worker_name, dictionary, queue, lock):
 				if after_marker == None:
 					break
 				print ("after_marker is forced to be changed into: " + after_marker + " -----------------------------------------------")
+			if got_empty_return == True:
+				key = read_queue(queue, lock)
+				after_marker = key
+				got_empty_return = False
 			original_result, section_result = read_object_list(bucket, after_marker, int(SECTION_SIZE * 1.1))
 			after_marker = original_result.next_marker
+			count = 0
 			for obj in section_result:
+				count += 1
 				after_marker = original_result.next_marker
 				if after_marker == "":
 					arrive_end_and_need_to_change_after_marker = True
@@ -203,6 +213,10 @@ def worker(worker_name, dictionary, queue, lock):
 				print (worker_name + " after_marker: " + after_marker + ", key: " + obj.key + ", has: " + str(has))
 				if has:
 					break
+			if count == 0:
+				got_empty_return = True
+			else:
+				got_empty_return = False
 	print ("Worker: " + worker_name + " stopped.")
 
 def merge_files(): 
@@ -287,14 +301,19 @@ def test2():
 	print ("Time cost: " + str(time_end - time_start) + "ms\n")
 	print ("Done!\n")
 
-
 def test():
-	auth = oss2.Auth(ACCESS_KEY, SECRET_KEY)
-	bucket = oss2.Bucket(auth, ENDPOINT, BUCKET_NAME)
-	result = oss2.ObjectIterator(bucket, max_keys=2, marker='')
-	part = islice(result, 4)
-	for b in part:
-		print b.key + " next marker: " + result.next_marker + " is dir: " + str(b.is_prefix()) + " last_modified: " + str(b.last_modified) + " size: " + str(b.size)
+	try:
+		auth = oss2.Auth(ACCESS_KEY, SECRET_KEY)
+		bucket = oss2.Bucket(auth, ENDPOINT, BUCKET_NAME)
+		#result, part = read_object_list(bucket, "fdsaf", 1)
+		result, part = read_object_list(bucket, "cdv-diandian/DDSP_YUNSHI/7353/1937813ce5eb40e599b1736378509c5a.jpg", 1)
+		#result = oss2.ObjectIterator(bucket, max_keys=2, marker='')
+		#part = islice(result, 3)
+		print ("nextmarker: " + result.next_marker)
+		for b in part:
+			print b.key + " next marker: " + result.next_marker + " is dir: " + str(b.is_prefix()) + " last_modified: " + str(b.last_modified) + " size: " + str(b.size)
+	except:
+		print("err")
 
 if __name__ == '__main__':
 	pdb.set_trace()
