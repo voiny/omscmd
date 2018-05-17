@@ -63,10 +63,10 @@ if options.output_file:
 	OUTPUT_FILE = options.output_file
 
 if options.access_key:
-	ACCESS_KEY = access_key
+	ACCESS_KEY = options.access_key
 
 if options.secret_key:
-	SECRET_KEY = secret_key
+	SECRET_KEY = options.secret_key
 
 if options.endpoint:
 	ENDPOINT = options.endpoint
@@ -173,7 +173,7 @@ def worker(worker_name, dictionary, queue, lock):
 	arrive_end_and_need_to_change_after_marker = False
 	print ("Worker: " + worker_name + " started.")
 	with open(WORKSPACE + "/" + worker_name, "a") as output_file:
-		print ("key: " + key)
+		#print ("key: " + key)
 		got_empty_return = False
 		while True:
 			if key == None:
@@ -198,23 +198,24 @@ def worker(worker_name, dictionary, queue, lock):
 				after_marker = original_result.next_marker
 				if after_marker == "":
 					arrive_end_and_need_to_change_after_marker = True
-				print ("after_marker check: " + after_marker)
+				#print ("after_marker check: " + after_marker)
 				has = False
 				if is_time_a_after_b(obj.last_modified * 1000, SEPARATE_TIME) == True:
 					line = format_object(obj)
 					output_file.write(line + "\n")
 					print ("write true line: " + line)
 				if dictionary.has_key(obj.key):
-					has = True
 					arrive_end_and_need_to_change_after_marker = False
 					key = read_queue(queue, lock)
-					print ("has_key, read_queue: " + key + ", after_marker becomes " + key)
 					after_marker = key
-				print (worker_name + " after_marker: " + after_marker + ", key: " + obj.key + ", has: " + str(has))
-				if has:
+					if key == None:
+						break
+					print ("has_key, read_queue: " +obj.key + ", after_marker becomes " + key)
 					break
+				#print (worker_name + " after_marker: " + after_marker + ", key: " + obj.key + ", has: " + str(has))
 			if count == 0:
 				got_empty_return = True
+				print("got empty return.")
 			else:
 				got_empty_return = False
 	print ("Worker: " + worker_name + " stopped.")
@@ -316,5 +317,5 @@ def test():
 		print("err")
 
 if __name__ == '__main__':
-	pdb.set_trace()
+	#pdb.set_trace()
 	main()
