@@ -23,18 +23,19 @@ SOURCE_FILE = None
 OUTPUT_FILE = None
 BUCKET_NAME = "perftest1"
 SEPARATE_TIME = None
-ENDPOINT = "http://oss-cn-beijing.aliyuncs.com"
+ENDPOINT = "oss-cn-beijing.aliyuncs.com"
 ACCESS_KEY = "LTAI4uUTSs8oJFNO"
-SECRET_KEY = "6h9axkuayKvJGK7gTSdhE87Mwal41"
+SECRET_KEY = "6h9axkuayKvJGK7gTSdhE87Mwal41I"
 PARSER = OptionParser()
-PARSER.add_option("--ak","--access_key",action="store", dest="access_key",help="Access key.")
-PARSER.add_option("--sk","--secret_key",action="store", dest="secret_key",help="Secret key.")
-PARSER.add_option("-e","--endpoint",action="store", dest="endpoint",help="Enpoint, https://xxx.xxx.xxx, e.g.")
-PARSER.add_option("-b","--bucket_name",action="store", dest="bucket_name",help="Bucket name.")
-PARSER.add_option("-s","--source_file",action="store", dest="source_file",help="Source file of full list of objects.")
-PARSER.add_option("-o","--output_file",action="store", dest="output_file",help="Output file.")
-PARSER.add_option("--separate_time","--separate_time",action="store", dest="separate_time",help="Collect object after separate time, 2000-01-01 00:00:00 e.g.")
-PARSER.add_option("-t","--thread_num",action="store", dest="thread_num",help="Number of thread(s).")
+PARSER.add_option("--ak", "--access_key",action="store", dest="access_key",help="Access key.")
+PARSER.add_option("--sk", "--secret_key",action="store", dest="secret_key",help="Secret key.")
+PARSER.add_option("-e", "--endpoint",action="store", dest="endpoint",help="Enpoint, https://xxx.xxx.xxx, e.g.")
+PARSER.add_option("-b", "--bucket_name",action="store", dest="bucket_name",help="Bucket name.")
+PARSER.add_option("-s", "--source_file",action="store", dest="source_file",help="Source file of full list of objects.")
+PARSER.add_option("-o", "--output_file",action="store", dest="output_file",help="Output file.")
+PARSER.add_option("--separate_time", "--separate_time",action="store", dest="separate_time",help="Collect object after separate time, '2000-01-01 00:00:00' e.g.")
+PARSER.add_option("--section_size", "--section_size",action="store", type="int", dest="section_size",help="Section size, " + str(SECTION_SIZE) + " by default.")
+PARSER.add_option("-t", "--thread_num",action="store", dest="thread_num",help="Number of thread(s).")
 
 PARSER.add_option("-w","--workspace_path",action="store",dest="workspace_path",help="Path of workspace, " + WORKSPACE + " by default.")
 (options, args) = PARSER.parse_args()
@@ -52,6 +53,9 @@ if options.thread_num:
 
 if options.workspace_path:
 	WORKSPACE = options.workspace_path
+
+if options.section_size:
+	SECTION_SIZE = options.section_size
 
 if options.source_file:
 	SOURCE_FILE = options.source_file
@@ -101,7 +105,11 @@ def write_queue(queue, lock, value):
 
 def read_queue(queue, lock):
 	lock.acquire()
-	result = queue.get(False)
+	result = None
+	try:
+		result = queue.get(False)
+	except:
+		result = None
 	lock.release()
 	return result
 
@@ -127,7 +135,7 @@ def generate_marker_section(source_file, dictionary, object_count_per_section):
 	with open(source_file) as one_file:
 		for line in one_file:
 			if c % object_count_per_section == 0:
-				sys.stdout.write("Procesed lines: " + str(c))
+				sys.stdout.write("Processed lines: " + str(c))
 				sys.stdout.write("\r")
 				sys.stdout.flush()
 				time, key, size = get_parts_from_line(line)
@@ -147,7 +155,7 @@ def is_time_a_after_b(time_a, time_b):
 
 def read_object_list(bucket, after_marker, max_keys):
 	result = oss2.ObjectIterator(bucket, max_keys=1000, marker=after_marker)
-	return islice(result, max_keys)
+	return result,  islice(result, max_keys)
 
 def format_object(obj):
 	last_modified = str(obj.last_modified)
@@ -160,19 +168,42 @@ def worker(worker_name, dictionary, queue, lock):
 	bucket = oss2.Bucket(auth, ENDPOINT, BUCKET_NAME)
 	key = read_queue(queue, lock)
 	after_marker = key
+	arrive_end_and_need_to_change_after_marker = False
+	print ("Worker: " + worker_name + " started.")
 	with open(WORKSPACE + "/" + worker_name, "a") as output_file:
 		while True:
-			if not key:
+			if key == None:
 				break
-			section_result = read_object_list(bucket, after_marker, int(SECTION_SIZE * 1.1))
-			after_marker = section_result.next_marker
-			for obj in section_result:
-				if is_time_a_after_b(obj.last_modified, SEPARATE_TIME) == True:
-					output_file.write(format_object(obj))
-				if dictionary.has_key(obj.key):
-					key = read_queue(queue, lock)
-					after_marker = key
+			print ("Read round, after_marker: " + after_marker + " -----------------------------------------------")
+			if arrive_end_and_need_to_change_after_marker == True:
+				arrive_end_and_need_to_change_after_marker = False
+				key = read_queue(queue, lock)
+				after_marker = key
+				if after_marker == None:
 					break
+				print ("after_marker is forced to be changed into: " + after_marker + " -----------------------------------------------")
+			original_result, section_result = read_object_list(bucket, after_marker, int(SECTION_SIZE * 1.1))
+			after_marker = original_result.next_marker
+			for obj in section_result:
+				after_marker = original_result.next_marker
+				if after_marker == "":
+					arrive_end_and_need_to_change_after_marker = True
+				print ("after_marker check: " + after_marker)
+				has = False
+				if is_time_a_after_b(obj.last_modified * 1000, SEPARATE_TIME) == True:
+					line = format_object(obj)
+					output_file.write(line + "\n")
+					print ("write true line: " + line)
+				if dictionary.has_key(obj.key):
+					has = True
+					arrive_end_and_need_to_change_after_marker = False
+					key = read_queue(queue, lock)
+					print ("has_key, read_queue: " + key + ", after_marker becomes " + key)
+					after_marker = key
+				print ("after_marker: " + after_marker + ", key: " + obj.key + ", has: " + str(has))
+				if has:
+					break
+	print ("Worker: " + worker_name + " stopped.")
 
 def merge_files(): 
 	try:
@@ -188,13 +219,12 @@ def merge_files():
 					dictionary[key] = (time, size)
 					#output_file.write(line)
 		for (key, value) in dictionary.items():
-			output_file.write(generate_line(value.time, key, value.size))
+			output_file.write(generate_line(value[0], key, value[1]) + "\n")
 	finally:
 		if output_file:
 			output_file.close()
 
-if __name__ == '__main__':
-	pdb.set_trace()
+def main():
 	if not SOURCE_FILE or not OUTPUT_FILE or not BUCKET_NAME or not ENDPOINT or not ACCESS_KEY or not SECRET_KEY or not SEPARATE_TIME:
 		PARSER.print_help()
 		sys.exit()	
@@ -230,11 +260,19 @@ if __name__ == '__main__':
 	print ("Merging finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
 	print ("Time cost: " + str(time_end - time_start) + "ms\n")
 	print ("Done!\n")
-#		#for b in islice(oss2.ObjectIterator(bucket, max_keys=10, marker='b5/'), 1000):
+
+def test():
+	auth = oss2.Auth(ACCESS_KEY, SECRET_KEY)
+	bucket = oss2.Bucket(auth, ENDPOINT, BUCKET_NAME)
+#	#		#for b in islice(oss2.ObjectIterator(bucket, max_keys=10, marker='b5/'), 1000):
 #	result = oss2.ObjectIterator(bucket, max_keys=10, marker='b5/aliyun-2G@2')
-#	part = islice(result, 10000)
-#	for b in part:
-#		print b.key + " next marker: " + result.next_marker + " is dir: " + str(b.is_prefix()) + " last_modified: " + str(b.last_modified) + " size: " + str(b.size)
+	result = oss2.ObjectIterator(bucket, max_keys=2, marker='')
+	part = islice(result, 4)
+	for b in part:
+		print b.key + " next marker: " + result.next_marker + " is dir: " + str(b.is_prefix()) + " last_modified: " + str(b.last_modified) + " size: " + str(b.size)
 #	
 #	
-#	p =	
+
+if __name__ == '__main__':
+	pdb.set_trace()
+	main()
