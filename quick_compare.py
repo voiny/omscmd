@@ -203,7 +203,7 @@ def worker(worker_name, dictionary, queue, lock):
 				if is_time_a_after_b(obj.last_modified * 1000, SEPARATE_TIME) == True:
 					line = format_object(obj)
 					output_file.write(line + "\n")
-					print ("write true line: " + line)
+					#print ("write true line: " + line)
 				if dictionary.has_key(obj.key):
 					arrive_end_and_need_to_change_after_marker = False
 					key = read_queue(queue, lock)
