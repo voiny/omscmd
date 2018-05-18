@@ -15,6 +15,7 @@ import datetime
 
 APP_PREFIX = "quick_compare"
 THREAD_NUM = 1
+END_FLAG = APP_PREFIX + "END_FLAG" + str(datetime.datetime.now())
 #the number of keys that a section contains
 SECTION_SIZE = 10000
 WORKSPACE = "/data/tmp/quick_compare"
@@ -131,6 +132,7 @@ def get_line_of_file(source_file):
 
 def generate_marker_section(source_file, dictionary, object_count_per_section):
 	c = 0
+	last_key = ""
 	with open(source_file) as one_file:
 		for line in one_file:
 			if c % object_count_per_section == 0:
@@ -138,8 +140,10 @@ def generate_marker_section(source_file, dictionary, object_count_per_section):
 				sys.stdout.write("\r")
 				sys.stdout.flush()
 				time, key, size = get_parts_from_line(line)
-				dictionary[key] = time
+				dictionary[last_key] = key
+				last_key = key
 			c += 1
+	dictionary[last_key] = END_FLAG
 	sys.stdout.write("Procesed lines: " + str(c))
 	sys.stdout.write("\r")
 	sys.stdout.flush()
@@ -165,60 +169,49 @@ def format_object(obj):
 #		last_modified = str(obj.last_modified) + "000"
 	return last_modified  + "000 " + obj.key + " " + str(obj.size)
 
+def is_key_a_after_or_equal_b(key_a, key_b):
+	result = cmp(key_a, key_b)
+	if result == 1 or result ==0:
+		return True
+	else:
+		return False
+
 def worker(worker_name, dictionary, queue, lock):
 	auth = oss2.Auth(ACCESS_KEY, SECRET_KEY)
 	bucket = oss2.Bucket(auth, ENDPOINT, BUCKET_NAME)
 	key = read_queue(queue, lock)
 	after_marker = key
-	arrive_end_and_need_to_change_after_marker = False
 	print ("Worker: " + worker_name + " started.")
 	with open(WORKSPACE + "/" + worker_name, "a") as output_file:
-		#print ("key: " + key)
-		got_empty_return = False
 		separate_time = SEPARATE_TIME / 1000
+		section_size = int(SECTION_SIZE * 1.1)
 		while True:
 			if key == None:
 				break
-			print ("Read round, after_marker: " + after_marker + " -----------------------------------------------")
-			if arrive_end_and_need_to_change_after_marker == True:
-				arrive_end_and_need_to_change_after_marker = False
-				key = read_queue(queue, lock)
-				after_marker = key
-				if after_marker == None:
-					break
-				print ("after_marker is forced to be changed into: " + after_marker + " -----------------------------------------------")
-			if got_empty_return == True:
-				key = read_queue(queue, lock)
-				after_marker = key
-				got_empty_return = False
-			original_result, section_result = read_object_list(bucket, after_marker, int(SECTION_SIZE * 1.1))
-			after_marker = original_result.next_marker
-			count = 0
+			print ("Read round, after_marker: " + after_marker + " -----------------------------------------------")			
+			original_result, section_result = read_object_list(bucket, after_marker, section_size)
+			objects = []
 			for obj in section_result:
-				count += 1
+				objects.append(obj)
 				after_marker = original_result.next_marker
-				if after_marker == "":
-					arrive_end_and_need_to_change_after_marker = True
-				#print ("after_marker check: " + after_marker)
-				has = False
-				if is_time_a_after_b(obj.last_modified, separate_time) == True:
-					line = format_object(obj)
-					output_file.write(line + "\n")
-					#print ("write true line: " + line)
-				if dictionary.has_key(obj.key):
-					arrive_end_and_need_to_change_after_marker = False
+			length = len(objects)
+			if (length > 0):
+				last_object = objects[length - 1]
+				if is_key_a_after_or_equal_b(last_object.key, dictionary[key]):
 					key = read_queue(queue, lock)
 					after_marker = key
-					if key == None:
-						break
-					print ("has_key, read_queue: " +obj.key + ", after_marker becomes " + key)
-					break
-				#print (worker_name + " after_marker: " + after_marker + ", key: " + obj.key + ", has: " + str(has))
-			if count == 0:
-				got_empty_return = True
-				print("got empty return.")
+				else:
+					if after_marker == None or after_marker == "":
+						key = read_queue(queue, lock)
+						after_marker = key
 			else:
-				got_empty_return = False
+				key = read_queue(queue, lock)
+				after_marker = key
+			for i in range(length):
+				if is_time_a_after_b(objects[i].last_modified, separate_time) == True:
+					line = format_object(objects[i])
+					output_file.write(line + "\n")
+					print ("write true line: " + line) 
 	print ("Worker: " + worker_name + " stopped.")
 
 def merge_files(): 
@@ -256,7 +249,7 @@ def main():
 		print ("Generating marker sections...\n")
 		generate_marker_section(SOURCE_FILE, dictionary, SECTION_SIZE)
 		print ("Genarating marker sections finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
-		dictionary[""] = 0
+	#	dictionary[""] = 0
 		print ("Putting marker sections into queue...\n")
 		put_dictionary_into_queue(dictionary, queue, lock)
 		print ("Putting marker sections into queue finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
@@ -309,10 +302,10 @@ def test():
 		auth = oss2.Auth(ACCESS_KEY, SECRET_KEY)
 		bucket = oss2.Bucket(auth, ENDPOINT, BUCKET_NAME)
 		#result, part = read_object_list(bucket, "fdsaf", 1)
-		result, part = read_object_list(bucket, "cdv-diandian/DDSP_YUNSHI/7353/1937813ce5eb40e599b1736378509c5a.jpg", 1)
+		result, part = read_object_list(bucket, "", 60000000)
 		#result = oss2.ObjectIterator(bucket, max_keys=2, marker='')
 		#part = islice(result, 3)
-		print ("nextmarker: " + result.next_marker)
+		#print ("nextmarker: " + result.next_marker)
 		for b in part:
 			print b.key + " next marker: " + result.next_marker + " is dir: " + str(b.is_prefix()) + " last_modified: " + str(b.last_modified) + " size: " + str(b.size)
 	except:
