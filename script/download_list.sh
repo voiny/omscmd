@@ -1,4 +1,5 @@
 #!/bin/bash
+#Download object list
 
 source ./env.sh
 

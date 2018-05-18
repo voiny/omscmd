@@ -24,8 +24,8 @@ OUTPUT_FILE = None
 BUCKET_NAME = "perftest2"
 SEPARATE_TIME = None
 ENDPOINT = "oss-cn-beijing.aliyuncs.com"
-ACCESS_KEY = "LTAI4uUTSs8oJFNO"
-SECRET_KEY = "6h9axkuayKvJGK7gTSdhE87Mwal41I"
+ACCESS_KEY = ""
+SECRET_KEY = ""
 PARSER = OptionParser()
 PARSER.add_option("--ak", "--access_key",action="store", dest="access_key",help="Access key.")
 PARSER.add_option("--sk", "--secret_key",action="store", dest="secret_key",help="Secret key.")

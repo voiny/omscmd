@@ -4,26 +4,29 @@
 export SRCCLOUDTYPE='Aliyun'
 #SRCTOOL = aws / ossutil
 export SRCTOOL='ossutil'
+#for OSS cn-beijing is OK, oss-cn-beijing is NOK
 export SRCREGION='cn-beijing'
 export SRCAK=''
 export SRCSK=''
-export SRCBUCKETNAME='bucketname'
-export SRCPATH_SHORT='/xxx/'
+export SRCBUCKETNAME='ys-public'
+export SRCPATH_SHORT='/'
+#export SRCPATH_SHORT='/xxx/'
 export SRCPATH="oss://${SRCBUCKETNAME}${SRCPATH_SHORT}"
 export DSTREGION='cn-north-1'
 export DSTAK=''
 export DSTSK=''
 #DSTBUCKETNAME should not contain 's3://'
-export DSTBUCKETNAME='bucketname'
+export DSTBUCKETNAME='obs-maas'
 #DSTPATH should not contain 's3://'
-export DSTPATH_SHORT='xxx/'
+#export DSTPATH_SHORT='xxx/'
+export DSTPATH_SHORT=''
 
 export SERVER_ADDRESS="https://oms.myhuaweicloud.com/v1/{project_id}/objectstorage/task"
 export NAME='omscmd'
 export ENABLE_KMS='false'
 export DESC_PREFIX='Migration_Project'
 export WORKSPACE=/data/tmp/${NAME}
-export OBJ_CNT_IN_SPLIT=1000000
+export OBJ_CNT_IN_SPLIT=10000
 export THREAD_PER_TASK=50
 export DB_PWD='xxx'
 
