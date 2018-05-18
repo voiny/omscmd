@@ -161,9 +161,9 @@ def read_object_list(bucket, after_marker, input_max_keys):
 
 def format_object(obj):
 	last_modified = str(obj.last_modified)
-	if len(last_modified) < 13:
-		last_modified = str(obj.last_modified) + "000"
-	return last_modified  + " " + obj.key + " " + str(obj.size)
+#	if len(last_modified) < 13:
+#		last_modified = str(obj.last_modified) + "000"
+	return last_modified  + "000 " + obj.key + " " + str(obj.size)
 
 def worker(worker_name, dictionary, queue, lock):
 	auth = oss2.Auth(ACCESS_KEY, SECRET_KEY)
@@ -175,6 +175,7 @@ def worker(worker_name, dictionary, queue, lock):
 	with open(WORKSPACE + "/" + worker_name, "a") as output_file:
 		#print ("key: " + key)
 		got_empty_return = False
+		separate_time = SEPARATE_TIME / 1000
 		while True:
 			if key == None:
 				break
@@ -200,7 +201,7 @@ def worker(worker_name, dictionary, queue, lock):
 					arrive_end_and_need_to_change_after_marker = True
 				#print ("after_marker check: " + after_marker)
 				has = False
-				if is_time_a_after_b(obj.last_modified * 1000, SEPARATE_TIME) == True:
+				if is_time_a_after_b(obj.last_modified, separate_time) == True:
 					line = format_object(obj)
 					output_file.write(line + "\n")
 					#print ("write true line: " + line)
@@ -251,7 +252,7 @@ def main():
 		dictionary = manager.dict()
 		lock = manager.Lock()
 		queue = manager.Queue()
-		pool = Pool()
+		pool = Pool(THREAD_NUM)
 		print ("Generating marker sections...\n")
 		generate_marker_section(SOURCE_FILE, dictionary, SECTION_SIZE)
 		print ("Genarating marker sections finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
@@ -281,7 +282,8 @@ def test2():
 	print ("thread_num: " + str(THREAD_NUM) + ", workspace: " + WORKSPACE + ", separate_time: " + str(SEPARATE_TIME) + "(" + timestamp2datetime_string_ms(SEPARATE_TIME) +  ")\n")
 	init()
 	with multiprocessing.Manager() as manager:
-		dictionary = manager.dict()
+		#dictionary = manager.dict()
+		dictionary = {}
 		lock = manager.Lock()
 		queue = manager.Queue()
 		pool = Pool()
