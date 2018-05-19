@@ -19,19 +19,23 @@ PARSER.add_option("-o","--output_file",action="store",dest="output",help="output
 SOURCE = options.source
 OUTPUT = options.output
 
+def get_parts_from_line(line):
+        parts = line.split()
+        time = parts[0]
+        length = len(parts)
+        key = ""
+        for i in range(1, length - 1):
+                key += parts[i]
+        size = parts[length - 1]
+        return time, key, size
+
 def generate_big_dic(file_path):
 	with open(file_path) as file:
 		for line in file:
-			parts = line.split( )
-			try:
-				time = parts[0]
-				name = parts[1]
-				size = parts[2]
-			except:
-				print ("Failed to load parts: " + line)
-				continue
+			time, name, size = get_parts_from_line(line)	
+			parts = [time, name, size]
 			store = None
-			if BIG_DIC.has_key(name):
+			if name in BIG_DIC:
 				store = BIG_DIC[name]
 			if store == None:
 				BIG_DIC[name] = parts

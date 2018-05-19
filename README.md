@@ -27,8 +27,9 @@
 
 ## Tools
 ### Quick Compare
-1. ./quick_compare.py -s /data/testdata2  -o /data/test.txt --separate_time "2018-05-10 00:00:00" --section_size 100 -t 100
-2. ./quick_compare.py -s /data/conv_oss/xxx -o /data/test.txt --separate_time "2018-05-02 00:26:00" --section_size 10000 -t 64 --ak=xxx --sk=xxx -b bucket-name
+0. Setup SDKs (oss2, obs, ...)
+1. ./quick_compare_xxx.py -s /data/testdata2  -o /data/test.txt --separate_time "2018-05-10 00:00:00" --section_size 100 -t 100
+2. ./quick_compare_xxx.py -s /data/conv_oss/xxx -o /data/test.txt --separate_time "2018-05-02 00:26:00" --section_size 10000 -t 64 --ak=xxx --sk=xxx -b bucket-name
 ## Tips
 1. /tmp/omscmd/ is the workspace by default.
 2. shell scripts for starting tasks are contained in the workspace's subdirectories, these scripts can be executed independently to create task(s).
