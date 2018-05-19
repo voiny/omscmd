@@ -53,14 +53,21 @@ def clear_tmp_file():
 	else:	
 		os.makedirs(TMP_WORKSPACE+RESULT_FILES_DIR)
 
+def get_parts_from_line(line):
+	parts = line.split()
+	time = parts[0]
+	length = len(parts)
+	key = ""
+	for i in range(1, length - 1):
+		key += parts[i]
+	size = parts[length - 1]
+	return time, key, size
+
 # load the destfile into dic
 def generate_dst_big_dic(destfile):
 	with open(destfile) as file:
 		for line in file:
-			parts = line.split( )
-			time = parts[0]
-			name = parts[1]
-			size = parts[2]
+			time, name, size = get_parts_from_line(line)
 			if SIZE_ENABLE != True:
 				BIG_DIC[name]=time
 			else: 
@@ -103,10 +110,7 @@ def compare_object(file_name, dic, num, compare_time = False):
 		with open(file_name) as tmp_file:
 			if compare_time == False:
 				for line in tmp_file:
-					parts = line.split( )
-					time = parts[0]
-        				name = parts[1]
-					size = parts[2]
+					time, name, size = get_parts_from_line(line)
 					if SIZE_ENABLE != True:
 						key = name
 					else:
@@ -117,10 +121,7 @@ def compare_object(file_name, dic, num, compare_time = False):
 						sub_diff_file.write(time + " " + name + " " + size +'\n')
 			else:
 				for line in tmp_file:
-					parts = line.split( )
-					time = parts[0]
-        				name = parts[1]
-					size = parts[2]
+					time, name, size = get_parts_from_line(line)
 					if SIZE_ENABLE != True:
 						key = name
 					else:
