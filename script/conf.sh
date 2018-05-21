@@ -26,7 +26,7 @@ export NAME='omscmd'
 export ENABLE_KMS='false'
 export DESC_PREFIX='Migration_Project'
 export WORKSPACE=/data/tmp/${NAME}
-export OBJ_CNT_IN_SPLIT=400
+export OBJ_CNT_IN_SPLIT=2000
 export THREAD_PER_TASK=50
 export DB_PWD='xxx'
 

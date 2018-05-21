@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source ./env.sh
+rm -rf /root/.aws/credentials
 aws configure>/dev/null<<EOF
 ${SRCAK}
 ${SRCSK}
