@@ -29,8 +29,10 @@ def datetime_string2timestamp_ms(datetime_string, datetime_format):
         return datetime_string2timestamp_s(datetime_string, datetime_format) * 1000
 
 SOURCE = options.source
-START_TIME = datetime_string2timestamp_ms(dateoptions.start_time)
-END_TIME = datetime_string2timestamp_ms(options.end_time)
+if options.start_time:
+	START_TIME = datetime_string2timestamp_ms(options.start_time, "%Y-%m-%d %H:%M:%S")
+if options.end_time:
+	END_TIME = datetime_string2timestamp_ms(options.end_time, "%Y-%m-%d %H:%M:%S")
 OUTPUT = options.output
 
 def get_parts_from_line(line):
@@ -60,11 +62,11 @@ def output_result(output):
 			if not t or not name or not size:
 				print ("Failed to load key: " + name)
 				continue
-			output_file.write(t + " " + name + " " + size + "\n")
+			output_file.write(str(t) + " " + name + " " + str(size) + "\n")
 
 if __name__ == '__main__':
 	#pdb.set_trace()
-	if not SOURCE or not OUTPUT or not START_TIME or not END_TIME:
+	if not SOURCE or not OUTPUT or not options.start_time or not options.end_time:
 		PARSER.print_help()
 		sys.exit()
 	print str(datetime.datetime.now()) + "   loading data into memory ..."
