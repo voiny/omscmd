@@ -31,8 +31,8 @@ mkdir -p ${OUTPUT_PATH}/same
 LISTS=`ls ${CMP_SRC_PATH}`
 for LINE in ${LISTS}
 do
-	echo ./oms_compare.py -s ${CMP_SRC_PATH}/${LINE} -d ${CMP_DST_PATH}/${LINE} -n 32 -w ${COMPARE_WORKSPACE}/ ${CMP_TIME}
-	./oms_compare.py -s ${CMP_SRC_PATH}/${LINE} -d ${CMP_DST_PATH}/${LINE} -n 32 -w ${COMPARE_WORKSPACE}/ ${CMP_TIME}
+	echo ./oms_compare.py -s ${CMP_SRC_PATH}/${LINE} -d ${CMP_DST_PATH}/${LINE} -n 1 -w ${COMPARE_WORKSPACE}/ ${CMP_TIME}
+	./oms_compare.py -s ${CMP_SRC_PATH}/${LINE} -d ${CMP_DST_PATH}/${LINE} -n 1 -w ${COMPARE_WORKSPACE}/ ${CMP_TIME}
 	BUCKETNAME=`echo ${LINE} | sed 's/result-//'`
 	mv ${COMPARE_WORKSPACE}/result_files/result_same_file ${OUTPUT_PATH}/same/${BUCKETNAME}
 	mv ${COMPARE_WORKSPACE}/result_files/result_diff_file ${OUTPUT_PATH}/diff/${BUCKETNAME}

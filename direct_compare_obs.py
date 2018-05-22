@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#Compare object list with OBS
 
 from com.obs.client.obs_client import ObsClient
 import pdb
