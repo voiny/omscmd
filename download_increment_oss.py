@@ -13,12 +13,12 @@ from multiprocessing import Pool
 import time
 import datetime
 
-APP_PREFIX = "quick_compare"
+APP_PREFIX = "increment_oss"
 THREAD_NUM = 1
 END_FLAG = APP_PREFIX + "END_FLAG" + str(datetime.datetime.now())
 #the number of keys that a section contains
 SECTION_SIZE = 10000
-WORKSPACE = "/data/tmp/quick_compare"
+WORKSPACE = "/data/tmp/increment_oss"
 SOURCE_FILE = None
 OUTPUT_FILE = None
 BUCKET_NAME = "perftest2"
