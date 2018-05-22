@@ -9,7 +9,6 @@ import os
 
 BIG_DIC = {}
 THREADS = []
-TMP_WORKSPACE = "/data/tmp/rm_duplicate"
 
 PARSER = OptionParser()
 PARSER.add_option("-s","--source_file",action="store", dest="source",help="source")

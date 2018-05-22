@@ -322,19 +322,39 @@ def test2():
 
 def test():
 	try:
-		obsClient = ObsClient(access_key_id=ACCESS_KEY, secret_access_key=SECRET_KEY, server=ENDPOINT)
+		obsClient = ObsClient(access_key_id=ACCESS_KEY, secret_access_key=SECRET_KEY, server=ENDPOINT, long_conn_mode=True)
 		#result = obsClient.listObjects(BUCKET_NAME, max_keys=1000, marker="")
+		counter = 0
+		t0 = datetime.datetime.now()
+		time = None
+		count = 0
+		error = 0
+
+		while True:
+			resp = obsClient.getObjectMetadata(BUCKET_NAME, 'spider/0000001A0B9211E7ACA400163E001B3D.jpeg')
+			if resp.status < 300:
+				#print('requestId:', resp.requestId)
+				#print('contentType:', resp.body.contentType)
+				#print('contentLength:', resp.body.contentLength)
+				#print('property:', dict(resp.header).get('property'))
+				count += 1
+				time = datetime.datetime.now() - t0
+			else:
+				print('errorCode:', resp.errorCode)
+				print('errorMessage:', resp.errorMessage)
+				error += 1
+			print("count: " + str(count) + ", error: " + str(error) + ", time: " + str(time))
 
 		#result, part = read_object_list(bucket, "fdsaf", 1)
-		r, part = read_object_list(obsClient, "", 60000000)
+		#r, part = read_object_list(obsClient, "", 60000000)
 		#result = oss2.ObjectIterator(bucket, max_keys=2, marker='')
 		#part = islice(result, 3)
 		#print ("nextmarker: " + result.next_marker)
-		for b in part:
-			print b.key + " next marker: " + result.next_marker + " is dir: " + str(b.is_prefix()) + " last_modified: " + str(b.last_modified) + " size: " + str(b.size)
+	#	for b in part:
+	#		print b.key + " next marker: " + result.next_marker + " is dir: " + str(b.is_prefix()) + " last_modified: " + str(b.last_modified) + " size: " + str(b.size)
 	except:
 		print("err")
 
 if __name__ == '__main__':
-	#pdb.set_trace()
-	main()
+	pdb.set_trace()
+	test()

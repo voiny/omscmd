@@ -25,6 +25,10 @@
     3.2 result_diff_file.txt for different object;
 4. executiong demo: python oms_compare.py -s src_file -d dst_file -n 2 -e true
 
+## Direct Compare
+Compare given list with destination storage using GetObjectMetadata method.
+1. ./direct_compare_obs.py -s /data/object_list -o /data/output.txt -t thread_num --ak=xxx --sk=xxx -b bucket-name
+
 ## Tools
 ### Quick Compare
 0. Setup SDKs (oss2, obs, ...)
