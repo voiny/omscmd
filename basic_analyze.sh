@@ -19,4 +19,6 @@ for FILE in ${LIST}; do
 	echo ${FILE} ${OBJECT_COUNT} ${SIZE}>> ${ORIGINAL_DIRECTORY}/result.txt
 done
 
+cat ${ORIGINAL_DIRECTORY}/result.txt
+
 cd ${ORIGINAL_DIRECTORY}

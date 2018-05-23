@@ -1,5 +1,5 @@
 #!/bin/bash
-#Migrate objects according to given list
+#Migrate objects according to given sublists
 
 source ./conf.sh
 
@@ -11,8 +11,8 @@ COUNT=0
 
 for LINE in ${LISTS}
 do
-	echo Crating migration task: ${LINE}
-	${ORIGINAL_DIRECTORY}/migrate_list.sh ${LINE} ${LINE} &
+	echo Creating migration task: ${LINE}
+	${ORIGINAL_DIRECTORY}/migrate_sublist.sh ${LINE} ${LINE} &
 	let COUNT+=1
 done
 
