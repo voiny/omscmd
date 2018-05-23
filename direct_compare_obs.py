@@ -27,7 +27,7 @@ SECRET_KEY = ""
 PARSER = OptionParser()
 PARSER.add_option("--ak", "--access_key",action="store", dest="access_key",help="Access key.")
 PARSER.add_option("--sk", "--secret_key",action="store", dest="secret_key",help="Secret key.")
-PARSER.add_option("-e", "--endpoint",action="store", dest="endpoint",help="Enpoint, https://xxx.xxx.xxx, e.g.")
+PARSER.add_option("-e", "--endpoint",action="store", dest="endpoint",help="Enpoint, xxx.xxx.xxx, e.g.")
 PARSER.add_option("-b", "--bucket_name",action="store", dest="bucket_name",help="Bucket name.")
 PARSER.add_option("-s", "--source_file",action="store", dest="source_file",help="Source file of full list of objects.")
 PARSER.add_option("-o", "--output_file",action="store", dest="output_file",help="Output file.")

@@ -3,9 +3,18 @@
 ORIGINAL_DIRECTORY=$(cd $(dirname $0); pwd)
 LISTPATH=$1
 
+function usage() {
+	echo "[command] [LISTPATH]"
+}
+
+if [ "${LISTPATH}" == "" ]; then
+	usage
+	exit
+fi
+
 
 cd ${LISTPATH}
-LIST=`ls`
+LIST=`ls ${LISTPATH}`
 rm -rf ${ORIGINAL_DIRECTORY}/result.txt
 for FILE in ${LIST}; do
 	SIZE=`cat ${FILE} | awk '{sum+=$3}END{print sum}'`
