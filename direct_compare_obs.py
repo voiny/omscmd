@@ -206,7 +206,7 @@ def worker(worker_name, dictionary):
 			ret_obj = read_object_info(obsClient, obj.key)
 			if ret_obj == None:
 				# Error
-				print("Failed find destination object: " + obj.key + "\n")
+				print("Destination object not found: " + obj.key + "\n")
 				output_file.write(obj.line)
 			else:
 				if is_time_a_after_b(obj.time, ret_obj.time) == True or obj.size != ret_obj.size:
