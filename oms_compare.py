@@ -180,7 +180,7 @@ if __name__ == '__main__':
 		print str(datetime.datetime.now()) + "   thread "+str(i)+" finish initiating ..."
 		THREADS.append(t)
 	
-	print str(datetime.datetime.now()) + "   finish initiating the thead ..."
+	print str(datetime.datetime.now()) + "   finish initiating the thread ..."
 	for j in range(len(THREADS)):
 		THREADS[j].start()
 		print str(datetime.datetime.now()) + "   thread "+str(j)+ " finish starting..."
