@@ -18,8 +18,8 @@ export DSTSK=''
 #DSTBUCKETNAME should not contain 's3://'
 export DSTBUCKETNAME='ys-ytl'
 #DSTPATH should not contain 's3://'
-#export DSTPATH_SHORT='xxx/'
-export DSTPATH_SHORT=''
+#export DSTPATH_SHORT='xxx/' (set '/' for root)
+export DSTPATH_SHORT='/'
 
 export SERVER_ADDRESS="https://oms.myhuaweicloud.com/v1/{project_id}/objectstorage/task"
 export NAME='omscmd'
