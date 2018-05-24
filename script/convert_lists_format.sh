@@ -5,6 +5,15 @@ source ./conf.sh
 TYPE=$1
 REMOVE_STRING=$2
 
+function usage() {
+	=echo "[command] [TYPE=ossutil/awscli/customized1/customized2...]"
+}
+
+if [ "${TYPE}" == "" ];then
+	usage
+	exit
+fi
+
 rm ${WORKSPACE}/converted_lists/ -rf
 mkdir -p ${WORKSPACE}/converted_lists/ 
 

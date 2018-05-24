@@ -236,7 +236,7 @@ def worker(worker_name, dictionary, queue, lock):
 				if is_time_a_after_b(objects[i].last_modified, separate_time) == True:
 					line = format_object(objects[i])
 					output_file.write(line + "\n")
-					print ("write true line: " + line) 
+					print ("write collected line: " + line) 
 	obsClient.close()	
 	print ("Worker: " + worker_name + " stopped.")
 
