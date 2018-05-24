@@ -120,14 +120,17 @@ def read_queue(queue, lock):
 	return result
 
 def get_parts_from_line(line):
-	parts = line.split()
-	time = parts[0]
-	length = len(parts)
-	key = ""
-	for i in range(1, length - 1):
-		key += parts[i]
-	size = parts[length - 1]
-	return time, key, size
+        parts = line.split()
+        time = parts[0]
+        length = len(parts)
+        key = ""
+        for i in range(1, length - 1):
+                key += parts[i]
+                key += " "
+        if len(key) > 0:
+                key = key[:-1]
+        size = parts[length - 1]
+        return time, key, size
 
 def get_line_of_file(source_file):
 	c = 0

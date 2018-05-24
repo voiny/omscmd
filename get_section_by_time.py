@@ -37,13 +37,16 @@ OUTPUT = options.output
 
 def get_parts_from_line(line):
         parts = line.split()
-        t = parts[0]
+        time = parts[0]
         length = len(parts)
         key = ""
         for i in range(1, length - 1):
                 key += parts[i]
+                key += " "
+        if len(key) > 0:
+                key = key[:-1]
         size = parts[length - 1]
-        return long(t), key, int(size)
+        return time, key, size
 
 def generate_big_dic(file_path):
 	with open(file_path) as file:

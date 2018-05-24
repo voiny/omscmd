@@ -59,7 +59,10 @@ def get_parts_from_line(line):
 	length = len(parts)
 	key = ""
 	for i in range(1, length - 1):
-		key += parts[i]
+		key += parts[i] 
+		key += " "
+	if len(key) > 0:
+		key = key[:-1]
 	size = parts[length - 1]
 	return time, key, size
 
@@ -159,7 +162,7 @@ def combine_result(number):
 			same_file.close()
 
 if __name__ == '__main__':
-	#pdb.set_trace()
+#	pdb.set_trace()
 	if not DEST_FILE or not SRC_FILE or not THREAD_NUM:
 		PARSER.print_help()
 		sys.exit()
@@ -168,11 +171,10 @@ if __name__ == '__main__':
 	print str(datetime.datetime.now()) + "   start loading the map ..."
 	generate_dst_big_dic(DEST_FILE)
 	print str(datetime.datetime.now()) + "   finish loading the map ..."
-	#compare_object(SRC_FILE,MAP)
-#	#thread.start_new_thread(compare_object, (SRC_FILE, MAP))
 	sub_files_list = split_file(SRC_FILE, THREAD_NUM)
 	print str(datetime.datetime.now()) + "   finish split the src file, with len " + str(len(sub_files_list)) + "..."
 	
+#	compare_object(TMP_WORKSPACE+SUB_FILES_DIR+SUB_FILE+str(0)+".txt", BIG_DIC, str(0), TIME_ENABLE)
 	for i in range(len(sub_files_list)):
 		t = threading.Thread(target=compare_object, args=(TMP_WORKSPACE+SUB_FILES_DIR+SUB_FILE+str(i)+".txt", BIG_DIC, str(i), TIME_ENABLE))
 		print str(datetime.datetime.now()) + "   thread "+str(i)+" finish initiating ..."
@@ -189,6 +191,7 @@ if __name__ == '__main__':
 	print str(datetime.datetime.now()) + "   finish comparing object ..."
 	combine_result(len(THREADS))
 	print str(datetime.datetime.now()) + "   finish combining result sub files ..."
+	print "Output file location: " + TMP_WORKSPACE
 	BIG_DIC.clear()
 	print str(datetime.datetime.now()) + "   finish clearing big dic ..."
 	try:
