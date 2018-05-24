@@ -359,5 +359,5 @@ def test():
 		print("err")
 
 if __name__ == '__main__':
-	pdb.set_trace()
-	test()
+	#pdb.set_trace()
+	main()
