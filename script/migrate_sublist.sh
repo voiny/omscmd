@@ -25,28 +25,31 @@ function help() {
 }
 
 function migrate() {
+	OLDIFS="${IFS}"
+	IFS=$'\n'
 	LIST=`cat ${ONE_LIST_FILE}`
 	KEYS=''
 	for LINE in ${LIST}
 	do
-		migrate_command ${LINE} ${DOWNLOAD_PATH}/${TASK_NAME}
+		migrate_command "${LINE}"
 	done
+	IFS="${OLDIFS}"
 }
 
 function migrate_command() {
-	LINE=$1
-	TMP_FILE=$2
+	LINE="$*"
+	TMP_FILE=${DOWNLOAD_PATH}/${TASK_NAME}
 	rm -rf ${TMP_FILE}
 	echo TASK ${TASK_NAME} is migrating ${LINE} ...
 	if [ "${SRCTOOL}" == "ossutil" ];then
-		echo ossutil --endpoint=oss-${SRCREGION}.aliyuncs.com --access-key-id=${SRCAK} --access-key-secret=${SRCSK} cp oss://${SRCBUCKETNAME}${SRCPATH_SHORT}${LINE} ${TMP_FILE}
-		ossutil --endpoint=oss-${SRCREGION}.aliyuncs.com --access-key-id=${SRCAK} --access-key-secret=${SRCSK} cp oss://${SRCBUCKETNAME}${SRCPATH_SHORT}${LINE} ${TMP_FILE} >> ${DOWNLOAD_LOG_PATH}/${TASK_NAME}_download.log
+		echo ossutil --endpoint=oss-${SRCREGION}.aliyuncs.com --access-key-id=${SRCAK} --access-key-secret=${SRCSK} cp "oss://${SRCBUCKETNAME}${SRCPATH_SHORT}${LINE}" ${TMP_FILE}
+		ossutil --endpoint=oss-${SRCREGION}.aliyuncs.com --access-key-id=${SRCAK} --access-key-secret=${SRCSK} cp "oss://${SRCBUCKETNAME}${SRCPATH_SHORT}${LINE}" ${TMP_FILE} >> ${DOWNLOAD_LOG_PATH}/${TASK_NAME}_download.log
 	elif [ "${SRCTOOL}" == "aws" ];then
 		echo Not supported
 		exit
 	fi
-	echo aws --endpoint-url=http://obs.myhwclouds.com --region=${DSTREGION} --profile=dst s3 cp ${TMP_FILE} s3://${DSTBUCKETNAME}/${DSTPATH_SHORT}${LINE}
-	aws --endpoint-url=http://obs.myhwclouds.com --region=${DSTREGION} --profile=dst s3 cp ${TMP_FILE} s3://${DSTBUCKETNAME}/${DSTPATH_SHORT}${LINE} >> ${UPLOAD_LOG_PATH}/${TASK_NAME}_upload.log
+	echo aws --endpoint-url=http://obs.myhwclouds.com --region=${DSTREGION} --profile=dst s3 cp ${TMP_FILE} "s3://${DSTBUCKETNAME}/${DSTPATH_SHORT}${LINE}"
+	aws --endpoint-url=http://obs.myhwclouds.com --region=${DSTREGION} --profile=dst s3 cp ${TMP_FILE} "s3://${DSTBUCKETNAME}/${DSTPATH_SHORT}${LINE}" >> ${UPLOAD_LOG_PATH}/${TASK_NAME}_upload.log
 }
 
 if [[ "${ONE_LIST_FILE}" == "" || "${TASK_NAME}" == "" ]]; then

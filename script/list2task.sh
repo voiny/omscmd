@@ -16,6 +16,8 @@ function help() {
 function convert_list_to_task() {
 	LIST=`cat ${ONE_LIST_FILE}`
 	KEYS=''
+	OLDIFS="${IFS}"
+	IFS=$'\n'
 	for LINE in ${LIST}
 	do
 		KEYS=\"${LINE}\"
@@ -33,6 +35,7 @@ function convert_list_to_task() {
 	if [ "${TABLE_FILE}" != "" ];then
 		echo ${ONE_LIST_FILE}	${KEYS} >> ${TABLE_FILE}
 	fi
+	IFS="${OLDIFS}"
 }
 
 

@@ -17,7 +17,7 @@ cd ${LISTPATH}
 LIST=`ls ${LISTPATH}`
 rm -rf ${ORIGINAL_DIRECTORY}/result.txt
 for FILE in ${LIST}; do
-	SIZE=`cat ${FILE} | awk '{sum+=$3}END{print sum}'`
+	SIZE=`cat ${FILE} | awk '{sum+=$NF}END{print sum}'`
 	if [ "${SIZE}" == "" ]; then
 		SIZE=0
 	fi
