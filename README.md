@@ -1,4 +1,5 @@
 # omscmd
+OMS Command Line Tool
 
 ## Installation
 0. configure: vim ./conf.sh
