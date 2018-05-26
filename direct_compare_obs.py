@@ -20,6 +20,8 @@ END_FLAG = APP_PREFIX + "END_FLAG" + str(datetime.datetime.now())
 WORKSPACE = "/data/tmp/direct_compare"
 SOURCE_FILE = None
 OUTPUT_FILE = None
+COMPARE_TIME = False
+COMPARE_SIZE = False
 BUCKET_NAME = "perftest2"
 ENDPOINT = "obs.myhwclouds.com"
 ACCESS_KEY = ""
@@ -29,6 +31,8 @@ PARSER.add_option("--ak", "--access_key",action="store", dest="access_key",help=
 PARSER.add_option("--sk", "--secret_key",action="store", dest="secret_key",help="Secret key.")
 PARSER.add_option("-e", "--endpoint",action="store", dest="endpoint",help="Enpoint, xxx.xxx.xxx, e.g.")
 PARSER.add_option("-b", "--bucket_name",action="store", dest="bucket_name",help="Bucket name.")
+PARSER.add_option("--ct", "--compare_time",action="store_true", dest="compare_time",default=False,help="Source file of full list of objects.")
+PARSER.add_option("--cs", "--compare_size",action="store_true", dest="compare_size",default=False,help="Source file of full list of objects.")
 PARSER.add_option("-s", "--source_file",action="store", dest="source_file",help="Source file of full list of objects.")
 PARSER.add_option("-o", "--output_file",action="store", dest="output_file",help="Output file.")
 PARSER.add_option("-t", "--thread_num",action="store", type="int", dest="thread_num",help="Number of thread(s).")
@@ -74,6 +78,12 @@ if options.endpoint:
 
 if options.bucket_name:
 	BUCKET_NAME = options.bucket_name
+
+if options.compare_time:
+	COMPARE_TIME = options.compare_time
+
+if options.compare_size:
+	COMPARE_SIZE = options.compare_size
 
 def init():
 	if os.path.exists(WORKSPACE):
@@ -209,8 +219,12 @@ def worker(worker_name, dictionary):
 				print("Destination object not found: " + obj.key + "\n")
 				output_file.write(obj.line)
 			else:
-				if is_time_a_after_b(obj.time, ret_obj.time) == True or obj.size != ret_obj.size:
+				if COMPARE_TIME == True and is_time_a_after_b(obj.time, ret_obj.time) == True:
 					output_file.write(obj.line)
+				elif COMPARE_SIZE == True and obj.size != ret_obj.size:
+					output_file.write(obj.line)
+				else:
+					pass
 	obsClient.close()	
 	print ("Worker: " + worker_name + " stopped.")
 
@@ -257,6 +271,7 @@ def main():
 	time_end = datetime.datetime.now()
 	print ("Merging finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
 	print ("Time cost: " + str(time_end - time_start) + "ms\n")
+	print ("Output location: " + OUTPUT_FILE)
 	print ("Done!\n")
 
 if __name__ == '__main__':
