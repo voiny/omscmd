@@ -6,17 +6,17 @@ export SRCCLOUDTYPE='Aliyun'
 export SRCTOOL='ossutil'
 #for OSS cn-beijing is OK, oss-cn-beijing is NOK
 export SRCREGION='cn-beijing'
-export SRCAK=''
-export SRCSK=''
-export SRCBUCKETNAME='ys-diandiantaobao'
+export SRCAK='LTAI7JYINLrQcd12'
+export SRCSK='uJyVHxEwVN4TKnowLxcyAQ82gsMlM2'
+export SRCBUCKETNAME='ys-public'
 export SRCPATH_SHORT='/'
 #export SRCPATH_SHORT='/xxx/'
 export SRCPATH="oss://${SRCBUCKETNAME}${SRCPATH_SHORT}"
 export DSTREGION='cn-north-1'
-export DSTAK=''
-export DSTSK=''
+export DSTAK='UUAAQCVCB2PU1YPTFFRG'
+export DSTSK='JXKsagokV2XxJDn21e5XdqVrqjjmE4die50ThoOt'
 #DSTBUCKETNAME should not contain 's3://'
-export DSTBUCKETNAME='ys-diandiantaobao'
+export DSTBUCKETNAME='ys-public'
 #DSTPATH should not contain 's3://'
 #export DSTPATH_SHORT='xxx/' (set '/' for root for OMS, set'' for root for migrate_list* scripts)
 export DSTPATH_SHORT=''
@@ -26,7 +26,7 @@ export NAME='omscmd'
 export ENABLE_KMS='false'
 export DESC_PREFIX='Migration_Project'
 export WORKSPACE=/data/tmp/${NAME}
-export OBJ_CNT_IN_SPLIT=5
+export OBJ_CNT_IN_SPLIT=300
 export THREAD_PER_TASK=50
 export DB_PWD='xxx'
 
