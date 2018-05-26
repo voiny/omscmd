@@ -2,12 +2,12 @@
 
 ORIGINAL_DIRECTORY=$(cd $(dirname $0); pwd)
 LISTPATH=$1
+OUTPUT_FILE=$2
 
 function usage() {
-	echo "[command] [LISTPATH]"
-}
+	echo "[command] [LISTPATH] [OUTPUT_FILE]" }
 
-if [ "${LISTPATH}" == "" ]; then
+if [[ "${LISTPATH}" == "" || "${OUTPUT_FILE}" == "" ]]; then
 	usage
 	exit
 fi
@@ -15,7 +15,7 @@ fi
 
 cd ${LISTPATH}
 LIST=`ls ${LISTPATH}`
-rm -rf ${ORIGINAL_DIRECTORY}/result.txt
+rm -rf ${OUTPUT_FILE}
 for FILE in ${LIST}; do
 	SIZE=`cat ${FILE} | awk '{sum+=$NF}END{print sum}'`
 	if [ "${SIZE}" == "" ]; then
@@ -25,9 +25,9 @@ for FILE in ${LIST}; do
 	if [ "${OBJECT_COUNT}" == "" ]; then
 		OBJECT_COUNT=0
 	fi
-	echo ${FILE} ${OBJECT_COUNT} ${SIZE}>> ${ORIGINAL_DIRECTORY}/result.txt
+	echo ${FILE} ${OBJECT_COUNT} ${SIZE}>> ${OUTPUT_FILE}
 done
 
-cat ${ORIGINAL_DIRECTORY}/result.txt
+cat ${OUTPUT_FILE}
 
 cd ${ORIGINAL_DIRECTORY}
