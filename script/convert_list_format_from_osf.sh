@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#The format of style customized2 is: timestamp(13 digits) key size
+#The format of style osf(omscmd standard format) is: timestamp(13 digits) key size
 
 if [ "${ORIGINAL_DIRECTORY}" != "" ]; then
 	cd ${ORIGINAL_DIRECTORY}

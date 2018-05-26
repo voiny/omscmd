@@ -6,7 +6,7 @@ TYPE=$1
 REMOVE_STRING=$2
 
 function usage() {
-	=echo "[command] [TYPE=ossutil/awscli/customized1/customized2...]"
+	echo "[command] [TYPE=ossutil/awscli/customized1/osf(omscmd standard format)...]"
 }
 
 if [ "${TYPE}" == "" ];then
@@ -31,4 +31,5 @@ wait
 
 cat ${WORKSPACE}/converted_lists/* > ${WORKSPACE}/converted_list
 echo Converted ${COUNT} lists into standard fomrat.
+echo Output location: ${WORKSPACE}/converted_list
 cd ${ORIGINAL_DIRECTORY}

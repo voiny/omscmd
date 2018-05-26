@@ -2,15 +2,15 @@
 
 source ./conf.sh
 
-LIST_PATH=$1
+LIST_FILE=$1
 TYPE=$2
 REMOVE_STRING=$3
 
 function usage() {
-	echo "[command] [LIST_PATH] [TYPE] [-REMOVE_STRING]"
+	echo "[command] [LIST_FILE] [TYPE] [-REMOVE_STRING]"
 }
 
-if [[ "${TYPE}" == "" || "${LIST_PATH}" == "" ]]; then
+if [[ "${TYPE}" == "" || "${LIST_FILE}" == "" ]]; then
 	usage
 	exit
 fi
@@ -18,7 +18,7 @@ fi
 rm ${WORKSPACE}/converted_lists/ -rf
 mkdir -p ${WORKSPACE}/converted_lists/ 
 
-cp -f ${LIST_PATH} ${WORKSPACE}/list
+cp -f ${LIST_FILE} ${WORKSPACE}/list
 
 if [ "${TYPE}" == "ossutil" ]; then
 	./remove_line.sh first

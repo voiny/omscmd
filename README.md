@@ -19,7 +19,7 @@
   
 ## Convert Format (OSF)
 Convert ossutil/awscli/others output format to omscmd standard format. In following steps, all omscmd related operations are based on omscmd standard format(OSF).
-1. cd script && ./convert_list_format.sh [original_object_list_file] (awscli/ossutil/customized1/customized2...) (remove_string), for ossutil, remove_string is oss://, for awscli/customized1/customized2 leave empty
+1. cd script && ./convert_list_format.sh [original_object_list_file] (awscli/ossutil/customized1/osf(omscmd standard format)...) (remove_string), for ossutil, remove_string is oss://, for awscli/customized1/osf leave empty
 2. output location is: ${WORKSPACE}/converted_list (OSF file)
 
 ## Migrate Using OMS
@@ -34,9 +34,9 @@ Using OSF-based object list file as input, call OMS API to create tasks in OMS.
 
 ## Migrate Using omscmd
 omscmd-based migration is based on migrating ability of third-party tools such as osstil and awscli.
-1. convert OSF-based object list file into purified object list file (containing only key of objects): cd script && ./convert_list_fomrat.sh [OSF file] customized2, outputs  purified object list file
+1. convert OSF-based object list file into purified object list file (containing only key of objects): cd script && ./convert_list_fomrat.sh [OSF file] osf, outputs  purified object list(POL) file
 2. configure conf.sh to setup source and destination bucket information
-3. migrate: cd script && ./migrate_list.sh [purified object list file]
+3. migrate: cd script && ./migrate_list.sh [POL(purified object list file)]
 
 ## Complete Comparison
 1. download object list from both source and destination object storage systems. (refer to section: Doanload Object List)
