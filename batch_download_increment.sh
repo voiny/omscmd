@@ -2,8 +2,8 @@
 
 AK=$1
 SK=$2
-PAIRS=("oss-cn-beijing,accesslog-ys"
-"oss-cn-beijing,oss-transfer"
+PAIRS=("oss-cn-beijing,bucketname1"
+"oss-cn-beijing,bucketname2"
 )
 SEPARATE_TIME="2018-05-20 00:00:00"
 ENDPOINT_URL_POSTFIX=".aliyuncs.com"

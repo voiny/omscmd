@@ -2,8 +2,8 @@
 
 AK=$1
 SK=$2
-PAIRS=("cn-beijing,accesslog-ys"
-"cn-beijing,oss-transfer"
+PAIRS=("cn-beijing,bucketname1"
+"cn-beijing,bucketname2"
 )
 WORK_THREAD_NUM=1
 #Converted list path informat of timestamp(13) key size
