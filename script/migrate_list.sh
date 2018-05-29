@@ -4,7 +4,7 @@
 source ./conf.sh
 
 function usage() {
-	echo "[command] [LIST_FILE] [TYPE=awscli/ossutil/osf(oms standard format)/pol(purified object list)]"
+	echo "[command] [LIST_FILE] [TYPE=awscli/ossutil/osf(oms standard format)/pol(purified object list)] [-AMAZON_CN_REGION=cn/(empty for international regions)]"
 }
 
 if [[ "$1" == "" || "$2" == "" ]]; then
@@ -14,6 +14,10 @@ fi
 
 LIST_FILE=$1
 TYPE=$2
+export AMAZON_CN_REGION=""
+if [ "$3" == "cn" ]; then
+	export AMAZON_CN_REGION="cn"
+fi
 /usr/bin/cp ${LIST_FILE} ${WORKSPACE}/list -f
 
 case ${TYPE} in
