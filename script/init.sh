@@ -17,6 +17,8 @@ elif [ "$SRCTOOL" == "ossutil" ]; then
 	cd ${ORIGINAL_DIRECTORY}
 	./conf_ossutil.sh
 elif [ "$SRCTOOL" == "qshell" ]; then
+	pip install qiniu
+	
 	rm -rf /usr/bin/qrsctl
 	rm -rf /tmp/qrsctl
 	wget -O /tmp/qrsctl http://devtools.qiniu.com/linux/amd64/qrsctl
