@@ -17,7 +17,15 @@ elif [ "$SRCTOOL" == "ossutil" ]; then
 	cd ${ORIGINAL_DIRECTORY}
 	./conf_ossutil.sh
 elif [ "$SRCTOOL" == "qshell" ]; then
+	rm -rf /usr/bin/qrsctl
+	rm -rf /tmp/qrsctl
+	wget -O /tmp/qrsctl http://devtools.qiniu.com/linux/amd64/qrsctl
+	cp /tmp/qrsctl /usr/bin/qrsctl
+	chmod 550 /usr/bin/qrsctl
+	qrsctl login ${SRCAK} ${SRCSK}
+	
 	rm -rf /usr/bin/qshell
+	rm -rf /tmp/qshell.zip
 	wget -O /tmp/qshell.zip http://devtools.qiniu.com/qshell-v2.1.8.zip?ref=developer.qiniu.com
 	unzip /tmp/qshell.zip -d /tmp/
 	cp /tmp/qshell-linux-x64 /usr/bin/qshell

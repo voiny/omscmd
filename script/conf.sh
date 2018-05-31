@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # AWS / Aliyun / Qiniu
-export SRCCLOUDTYPE='Aliyun'
+export SRCCLOUDTYPE='Qiniu'
 #SRCTOOL = aws / ossutil / qshell
-export SRCTOOL='ossutil'
+export SRCTOOL='qshell'
 #for OSS cn-beijing is OK, oss-cn-beijing is NOK
 export SRCREGION='cn-beijing'
-export SRCAK=''
-export SRCSK=''
+export SRCAK='1r1cmmWuTYaf-zW8WvqwnB_7mwXXXNOThKViA9_Z'
+export SRCSK='Xog5mzs9Ex25BXTC7hCK5TTLN-4UcE4ouv7dzvb-'
 export SRCBUCKETNAME='bucketname'
 export SRCPATH_SHORT='/'
 #export SRCPATH_SHORT='/xxx/'
