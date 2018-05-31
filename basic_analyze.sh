@@ -5,7 +5,8 @@ LISTPATH=$1
 OUTPUT_FILE=$2
 
 function usage() {
-	echo "[command] [LISTPATH] [OUTPUT_FILE]" }
+	echo "[command] [LISTPATH] [OUTPUT_FILE]"
+}
 
 if [[ "${LISTPATH}" == "" || "${OUTPUT_FILE}" == "" ]]; then
 	usage
