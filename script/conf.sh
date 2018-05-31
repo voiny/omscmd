@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# AWS / Aliyun / qiniu
+# AWS / Aliyun / Qiniu
 export SRCCLOUDTYPE='Aliyun'
 #SRCTOOL = aws / ossutil / qshell
 export SRCTOOL='ossutil'

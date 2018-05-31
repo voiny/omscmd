@@ -52,6 +52,9 @@ function migrate_command() {
 			echo aws --endpoint-url=http://s3.${SRCREGION}.amazonaws.com.cn --region=${DSTREGION} --profile=default s3 cp "s3://${SRCBUCKETNAME}${SRCPATH_SHORT}${LINE}" ${TMP_FILE}
 			aws --endpoint-url=http://s3.${AMAZON_CN_REGION}.amazonaws.com.cn --region=${DSTREGION} --profile=default s3 cp "s3://${SRCBUCKETNAME}${SRCPATH_SHORT}${LINE}" ${TMP_FILE} >> ${DOWNLOAD_LOG_PATH}/${TASK_NAME}_download.log
 		fi
+	elif [ "${SRCTOOL}" == "qshell" ];then
+		echo ossutil --endpoint=oss-${SRCREGION}.aliyuncs.com --access-key-id=${SRCAK} --access-key-secret=${SRCSK} cp "oss://${SRCBUCKETNAME}${SRCPATH_SHORT}${LINE}" ${TMP_FILE}
+		echo ossutil --endpoint=oss-${SRCREGION}.aliyuncs.com --access-key-id=${SRCAK} --access-key-secret=${SRCSK} cp "oss://${SRCBUCKETNAME}${SRCPATH_SHORT}${LINE}" ${TMP_FILE}
 	else
 		echo Not supported
 		exit
