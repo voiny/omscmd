@@ -1,22 +1,22 @@
 #!/bin/bash
 
-# AWS / Aliyun-OSS
+# AWS / Aliyun / qiniu
 export SRCCLOUDTYPE='Aliyun'
-#SRCTOOL = aws / ossutil
+#SRCTOOL = aws / ossutil / qshell
 export SRCTOOL='ossutil'
 #for OSS cn-beijing is OK, oss-cn-beijing is NOK
 export SRCREGION='cn-beijing'
-export SRCAK='LTAI7JYINLrQcd12'
-export SRCSK='uJyVHxEwVN4TKnowLxcyAQ82gsMlM2'
-export SRCBUCKETNAME='ys-public'
+export SRCAK=''
+export SRCSK=''
+export SRCBUCKETNAME='bucketname'
 export SRCPATH_SHORT='/'
 #export SRCPATH_SHORT='/xxx/'
 export SRCPATH="oss://${SRCBUCKETNAME}${SRCPATH_SHORT}"
 export DSTREGION='cn-north-1'
-export DSTAK='UUAAQCVCB2PU1YPTFFRG'
-export DSTSK='JXKsagokV2XxJDn21e5XdqVrqjjmE4die50ThoOt'
+export DSTAK=''
+export DSTSK=''
 #DSTBUCKETNAME should not contain 's3://'
-export DSTBUCKETNAME='ys-public'
+export DSTBUCKETNAME='bucketname'
 #DSTPATH should not contain 's3://'
 #export DSTPATH_SHORT='xxx/' (set '/' for root)
 export DSTPATH_SHORT='/'
