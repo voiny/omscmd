@@ -2,8 +2,27 @@
 
 AK=$1
 SK=$2
-PAIRS=("cn-beijing,bucketname1"
-"cn-beijing,bucketname2"
+PAIRS=("cn-beijing,accesslog-ys"
+"cn-beijing,oss-transfer"
+"cn-beijing,test-biaozhun"
+"cn-beijing,test-zhangrunshi"
+"cn-beijing,test-zhangrunshi-1"
+"cn-hangzhou,vmsdata"
+"cn-beijing,ys-csupload"
+"cn-beijing,ys-diandian"
+"cn-beijing,ys-diandiantaobao"
+"cn-beijing,ys-jsbc-test"
+"cn-beijing,ys-onsite"
+"cn-beijing,ys-public"
+"cn-beijing,ys-shuchu"
+"cn-beijing,ys-wechat"
+"cn-beijing,ys-ytl"
+"cn-beijing,ys-zhiyun"
+"cn-beijing,ys-zhuanma"
+"cn-hangzhou,yshz-public"
+"cn-beijing,yunshi-cdn"
+"cn-shanghai,zbtest-huadong2"
+"cn-hangzhou,zcz-test"
 )
 WORK_THREAD_NUM=1
 #Converted list path informat of timestamp(13) key size

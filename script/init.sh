@@ -16,6 +16,13 @@ elif [ "$SRCTOOL" == "ossutil" ]; then
 	chmod 550 /usr/bin/ossutil
 	cd ${ORIGINAL_DIRECTORY}
 	./conf_ossutil.sh
+elif [ "$SRCTOOL" == "qshell" ]; then
+	rm -rf /usr/bin/qshell
+	wget -O /tmp/qshell.zip http://devtools.qiniu.com/qshell-v2.1.8.zip?ref=developer.qiniu.com
+	unzip /tmp/qshell.zip -d /tmp/
+	cp /tmp/qshell-linux-x64 /usr/bin/qshell
+	chmod 550 /usr/bin/qshell
+	./conf_qshell.sh
 else
 	cd ${WORKSPACE}
 	wget https://bootstrap.pypa.io/get-pip.py
