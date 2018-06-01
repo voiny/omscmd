@@ -40,12 +40,15 @@ function convert_list_to_task() {
 	echo "function stop() {" >> ${ONE_LIST_FILE}_task.sh
 	echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:${IAM_TOKEN}' --insecure -X PUT --data '{\"operation\":\"stop\"}' ${SERVER_ADDRESS}/objectstorage/task/\${PARAM2}" >> ${ONE_LIST_FILE}_task.sh
 	echo "}">> ${ONE_LIST_FILE}_task.sh
-	echo "function resume() {" >> ${ONE_LIST_FILE}_task.sh
-	echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:' --insecure -X PUT --data '{\"operation\":\"start\",\"source_ak\":\"${SRCAK}\",\"source_sk\":\"${SRCSK}\",\"target_ak\":\"${DSTAK}\",\"target_sk\":\"${DSTSK}\"}' ${SERVER_ADDRESS}/objectstorage/task/\${PARAM2}">> ${ONE_LIST_FILE}_task.sh
-	echo "}">> ${ONE_LIST_FILE}_task.sh
 	echo "function status() {">> ${ONE_LIST_FILE}_task.sh
 	echo "	TASK_STATUS=\`curl -H Content-Type:application/json -H X-Auth-Token: --insecure -s -X GET ${SERVER_ADDRESS}/objectstorage/task/\${PARAM2}|jq \".status\"\`">> ${ONE_LIST_FILE}_task.sh
 	echo "	echo \"\${TASK_STATUS}\"">> ${ONE_LIST_FILE}_task.sh
+	echo "}">> ${ONE_LIST_FILE}_task.sh
+	echo "function resume() {" >> ${ONE_LIST_FILE}_task.sh
+	echo "	RESULT=\`status\`">> ${ONE_LIST_FILE}_task.sh
+	echo "	if [ \"\${RESULT}\" == \"3\" ];then">> ${ONE_LIST_FILE}_task.sh
+	echo "		curl -H 'Content-Type:application/json' -H 'X-Auth-Token:' --insecure -X PUT --data '{\"operation\":\"start\",\"source_ak\":\"${SRCAK}\",\"source_sk\":\"${SRCSK}\",\"target_ak\":\"${DSTAK}\",\"target_sk\":\"${DSTSK}\"}' ${SERVER_ADDRESS}/objectstorage/task/\${PARAM2}">> ${ONE_LIST_FILE}_task.sh
+	echo "	fi">> ${ONE_LIST_FILE}_task.sh
 	echo "}">> ${ONE_LIST_FILE}_task.sh
 	echo "if [ \"\${PARAM1}\" == \"start\" ]; then" >> ${ONE_LIST_FILE}_task.sh
 	echo "	start">> ${ONE_LIST_FILE}_task.sh
