@@ -5,28 +5,29 @@ export SRCCLOUDTYPE='Qiniu'
 #SRCTOOL = aws / ossutil / qshell
 export SRCTOOL='qshell'
 #for OSS cn-beijing is OK, oss-cn-beijing is NOK
-export SRCREGION='cn-beijing'
+export SRCREGION='z0'
 export SRCAK=''
 export SRCSK=''
-export SRCBUCKETNAME='bucketname'
+export SRCBUCKETNAME='ocs3-public'
 export SRCPATH_SHORT='/'
 #export SRCPATH_SHORT='/xxx/'
 export SRCPATH="oss://${SRCBUCKETNAME}${SRCPATH_SHORT}"
-export DSTREGION='cn-north-1'
+export DSTREGION='cn-east-2'
 export DSTAK=''
 export DSTSK=''
 #DSTBUCKETNAME should not contain 's3://'
-export DSTBUCKETNAME='bucketname'
+export DSTBUCKETNAME='ocs3-public'
 #DSTPATH should not contain 's3://'
 #export DSTPATH_SHORT='xxx/' (set '/' for root)
 export DSTPATH_SHORT='/'
 
-export SERVER_ADDRESS="https://oms.myhuaweicloud.com/v1/{project_id}/objectstorage/task"
+export SERVER_ADDRESS="https://127.0.0.1:8099/v1/0000000000"
+#export SERVER_ADDRESS="https://oms.myhuaweicloud.com/v1/{project_id}/objectstorage/task"
 export NAME='omscmd'
 export ENABLE_KMS='false'
-export DESC_PREFIX='Migration_Project'
+export DESC_PREFIX='Task_3ocs-public'
 export WORKSPACE=/data/tmp/${NAME}
-export OBJ_CNT_IN_SPLIT=300
+export OBJ_CNT_IN_SPLIT=499
 export THREAD_PER_TASK=50
 export DB_PWD='xxx'
 

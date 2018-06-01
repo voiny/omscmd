@@ -40,8 +40,8 @@ else
 			do
 				let COUNTER+=1
 				echo TASK ${COUNTER} ${TASKS_FILES_ARRAY[${idx}]} is starting:
-				echo ./${TASKS_FILES_ARRAY[${idx}]} 
-				./${TASKS_FILES_ARRAY[${idx}]}
+				echo ./${TASKS_FILES_ARRAY[${idx}]} start
+				./${TASKS_FILES_ARRAY[${idx}]} start
 				echo 
 			done
 		fi
