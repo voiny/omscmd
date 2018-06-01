@@ -61,6 +61,7 @@ function convert_list_to_task() {
 	echo "else">> ${ONE_LIST_FILE}_task.sh
 	echo "echo \"[command] [action(start/stop/resume/status)] [taskid]\"">> ${ONE_LIST_FILE}_task.sh
 	echo "fi" >> ${ONE_LIST_FILE}_task.sh
+	echo "echo \"\"" >> ${ONE_LIST_FILE}_task.sh
 	
 	chmod 550 ${ONE_LIST_FILE}_task.sh
 	if [ "${TABLE_FILE}" != "" ];then
