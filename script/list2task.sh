@@ -30,23 +30,33 @@ function convert_list_to_task() {
 		fi
 		KEYS=${KEYS},\"${LINE}\"
 	done
-	echo "function start() {"> ${ONE_LIST_FILE}_task.sh
-	echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:${IAM_TOKEN}' --insecure -X POST --data '{\"src_node\":{\"region\":\"${SRCREGION}\",\"ak\":\"${SRCAK}\",\"sk\":\"${SRCSK}\",\"object_key\":{\"path\":\"${SRCPATH_SHORT}\",\"keys\":[${KEYS}]},\"bucket\":\"${SRCBUCKETNAME}\",\"cloud_type\":\"${SRCCLOUDTYPE}\"},\"thread_num\":${THREAD_PER_TASK},\"enableKMS\":${ENABLE_KMS},\"description\":\"${DESC_PREFIX}_${ONE_LIST_FILE}\",\"dst_node\":{\"region\":\"${DSTREGION}\",\"ak\":\"${DSTAK}\",\"sk\":\"${DSTSK}\",\"object_key\":\"${DSTPATH_SHORT}\",\"bucket\":\"${DSTBUCKETNAME}\",\"cloud_type\":\"OTC\"}}' ${SERVER_ADDRESS}/objectstorate/task">> ${ONE_LIST_FILE}_task.sh
+	echo "#!/bin/bash" >${ONE_LIST_FILE}_task.sh
+	echo "" >>${ONE_LIST_FILE}_task.sh
+	echo "PARAM1=\$1">>${ONE_LIST_FILE}_task.sh
+	echo "PARAM2=\$2">>${ONE_LIST_FILE}_task.sh
+	echo "function start() {">>${ONE_LIST_FILE}_task.sh
+	echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:${IAM_TOKEN}' --insecure -X POST --data '{\"src_node\":{\"region\":\"${SRCREGION}\",\"ak\":\"${SRCAK}\",\"sk\":\"${SRCSK}\",\"object_key\":{\"path\":\"${SRCPATH_SHORT}\",\"keys\":[${KEYS}]},\"bucket\":\"${SRCBUCKETNAME}\",\"cloud_type\":\"${SRCCLOUDTYPE}\"},\"thread_num\":${THREAD_PER_TASK},\"enableKMS\":${ENABLE_KMS},\"description\":\"${DESC_PREFIX}_${ONE_LIST_FILE}\",\"dst_node\":{\"region\":\"${DSTREGION}\",\"ak\":\"${DSTAK}\",\"sk\":\"${DSTSK}\",\"object_key\":\"${DSTPATH_SHORT}\",\"bucket\":\"${DSTBUCKETNAME}\",\"cloud_type\":\"OTC\"}}' ${SERVER_ADDRESS}/objectstorage/task">> ${ONE_LIST_FILE}_task.sh
 	echo "}" >> ${ONE_LIST_FILE}_task.sh
 	echo "function stop() {" >> ${ONE_LIST_FILE}_task.sh
-	echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:${IAM_TOKEN}' --insecure -X PUT --data '{\"operation\":\"stop\"}' ${SERVER_ADDRESS}/objectstorage/task/\$2" >> ${ONE_LIST_FILE}_task.sh
+	echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:${IAM_TOKEN}' --insecure -X PUT --data '{\"operation\":\"stop\"}' ${SERVER_ADDRESS}/objectstorage/task/\${PARAM2}" >> ${ONE_LIST_FILE}_task.sh
 	echo "}">> ${ONE_LIST_FILE}_task.sh
 	echo "function resume() {" >> ${ONE_LIST_FILE}_task.sh
-	echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:' --insecure -X PUT --data '{\"operation\":\"start\",\"source_ak\":\"${SRCAK}\",\"source_sk\":\"${SRCSK}\",\"target_ak\":\"${DSTAK}\",\"target_sk\":\"${DSTSK}\"}' ${SERVER_ADDRESS}/objectstorage/changeState/\$2">> ${ONE_LIST_FILE}_task.sh
+	echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:' --insecure -X PUT --data '{\"operation\":\"start\",\"source_ak\":\"${SRCAK}\",\"source_sk\":\"${SRCSK}\",\"target_ak\":\"${DSTAK}\",\"target_sk\":\"${DSTSK}\"}' ${SERVER_ADDRESS}/objectstorage/task/\${PARAM2}">> ${ONE_LIST_FILE}_task.sh
 	echo "}">> ${ONE_LIST_FILE}_task.sh
-	echo "if [[ \"\$1\" == \"start\" ]; then" >> ${ONE_LIST_FILE}_task.sh
+	echo "function status() {">> ${ONE_LIST_FILE}_task.sh
+	echo "	TASK_STATUS=\`curl -H Content-Type:application/json -H X-Auth-Token: --insecure -s -X GET ${SERVER_ADDRESS}/objectstorage/task/\${PARAM2}|jq \".status\"\`">> ${ONE_LIST_FILE}_task.sh
+	echo "	echo \"\${TASK_STATUS}\"">> ${ONE_LIST_FILE}_task.sh
+	echo "}">> ${ONE_LIST_FILE}_task.sh
+	echo "if [ \"\${PARAM1}\" == \"start\" ]; then" >> ${ONE_LIST_FILE}_task.sh
 	echo "	start">> ${ONE_LIST_FILE}_task.sh
-	echo "elif [ \"\$1\" == \"stop\" ];then" >> ${ONE_LIST_FILE}_task.sh
+	echo "elif [ \"\${PARAM1}\" == \"stop\" ];then" >> ${ONE_LIST_FILE}_task.sh
 	echo "	stop">> ${ONE_LIST_FILE}_task.sh
-	echo "elif [ \"\$1\" == \"resume\" ];then" >> ${ONE_LIST_FILE}_task.sh
+	echo "elif [ \"\${PARAM1}\" == \"resume\" ];then" >> ${ONE_LIST_FILE}_task.sh
 	echo "	resume">> ${ONE_LIST_FILE}_task.sh
+	echo "elif [ \"\${PARAM1}\" == \"status\" ];then" >> ${ONE_LIST_FILE}_task.sh
+	echo "	status">> ${ONE_LIST_FILE}_task.sh
 	echo "else">> ${ONE_LIST_FILE}_task.sh
-	echo "echo [command] [action(start/stop/resume)] [taskid]">> ${ONE_LIST_FILE}_task.sh
+	echo "echo \"[command] [action(start/stop/resume)] [taskid]\"">> ${ONE_LIST_FILE}_task.sh
 	echo "fi" >> ${ONE_LIST_FILE}_task.sh
 	
 	chmod 550 ${ONE_LIST_FILE}_task.sh
