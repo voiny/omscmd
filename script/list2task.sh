@@ -56,7 +56,7 @@ function convert_list_to_task() {
 	echo "elif [ \"\${PARAM1}\" == \"status\" ];then" >> ${ONE_LIST_FILE}_task.sh
 	echo "	status">> ${ONE_LIST_FILE}_task.sh
 	echo "else">> ${ONE_LIST_FILE}_task.sh
-	echo "echo \"[command] [action(start/stop/resume)] [taskid]\"">> ${ONE_LIST_FILE}_task.sh
+	echo "echo \"[command] [action(start/stop/resume/status)] [taskid]\"">> ${ONE_LIST_FILE}_task.sh
 	echo "fi" >> ${ONE_LIST_FILE}_task.sh
 	
 	chmod 550 ${ONE_LIST_FILE}_task.sh
