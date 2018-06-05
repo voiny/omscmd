@@ -1,3 +1,4 @@
+```
 RANGING:
 if [SIZE] == 0 then "1.0B"
 elseif [SIZE] > 0 and [SIZE] <= 1024 then "2.1B-1KB"
@@ -26,3 +27,4 @@ elseif [SIZE] > 1024*1024*1024*200 and [SIZE] <= 1024*1024*1024*500 then "24.200
 elseif [SIZE] > 1024*1024*1024*500 and [SIZE] <= 1024*1024*1024*1024 then "25.500GB-1TB"
 else "26.>1TB"
 end
+```
