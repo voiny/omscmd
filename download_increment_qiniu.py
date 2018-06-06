@@ -1,7 +1,13 @@
 #!/usr/bin/env python
+#coding:utf-8
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf-8') 
 
 from qiniu import Auth
 from qiniu import BucketManager
+
 import json
 import base64
 import pdb
@@ -18,7 +24,7 @@ import datetime
 
 APP_PREFIX = "increment_qiniu"
 THREAD_NUM = 1
-END_FLAG = APP_PREFIX + "END_FLAG" + str(datetime.datetime.now())
+END_FLAG = None
 #the number of keys that a section contains
 SECTION_SIZE = 10000
 WORKSPACE = "/data/tmp/increment_qiniu"
@@ -216,15 +222,18 @@ def read_object_list(bucket, after_marker, input_max_keys):
 			length += 1
 			if length >= input_max_keys:
 				break
+		if eof == True:
+			break
 	return current_next_marker, result
 
 def format_object(obj):
 	last_modified = str(obj.last_modified)
-#	if len(last_modified) < 13:
-#		last_modified = str(obj.last_modified) + "000"
 	return last_modified  + " " + obj.key + " " + str(obj.size)
 
 def is_key_a_after_or_equal_b(key_a, key_b):
+	#END_FLAG is always at the end
+	if key_b == END_FLAG:
+		return False
 	result = cmp(key_a, key_b)
 	if result == 1 or result ==0:
 		return True
@@ -238,7 +247,7 @@ def worker(worker_name, dictionary, queue, lock):
 	after_marker = key
 	print ("Worker: " + worker_name + " started.")
 	with open(WORKSPACE + "/" + worker_name, "a") as output_file:
-		separate_time = SEPARATE_TIME / 1000
+		separate_time = SEPARATE_TIME
 		section_size = int(SECTION_SIZE * 1.1)
 		while True:
 			if key == None:
@@ -256,8 +265,7 @@ def worker(worker_name, dictionary, queue, lock):
 						key = read_queue(queue, lock)
 						after_marker = key
 					else:
-						key = last_object.key
-						after_marker = key
+						after_marker = last_object.key
 			else:
 				key = read_queue(queue, lock)
 				after_marker = key
@@ -309,7 +317,7 @@ def main():
 		put_dictionary_into_queue(dictionary, queue, lock)
 		print ("Putting marker sections into queue finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
 		print ("Starting threads...\n")
-#		worker(APP_PREFIX, dictionary, queue, lock)
+		#worker(APP_PREFIX + "0", dictionary, queue, lock)
 		for i in range(THREAD_NUM):
 			pool.apply_async(worker, args=(APP_PREFIX + str(i), dictionary, queue, lock))
 		pool.close()

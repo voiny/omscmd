@@ -3,6 +3,13 @@
 source ./env.sh
 
 yum -y install cloud-init
+
+cd ${WORKSPACE}
+wget -O ${WORKSPACE}/obssdk.zip https://support.huaweicloud.com/devg-obs_python_sdk_doc_zh/resource/eSDK_Storage_OBS_V2.1.22_Python.zip
+unzip obssdk.zip
+cd ${WORKSPACE}/src
+python setup.py install
+
 if [ "$SRCTOOL" == "s3cmd" ]; then
 	cd ${WORKSPACE}
 	wget https://bootstrap.pypa.io/get-pip.py

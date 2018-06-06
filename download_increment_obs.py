@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+#coding:utf-8
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 from com.obs.client.obs_client import ObsClient
 import pdb
@@ -15,7 +20,7 @@ import datetime
 
 APP_PREFIX = "increment_obs"
 THREAD_NUM = 1
-END_FLAG = APP_PREFIX + "END_FLAG" + str(datetime.datetime.now())
+END_FLAG = None
 #the number of keys that a section contains
 SECTION_SIZE = 10000
 WORKSPACE = "/data/tmp/increment_obs"
@@ -197,6 +202,9 @@ def format_object(obj):
 	return last_modified  + "000 " + obj.key + " " + str(obj.size)
 
 def is_key_a_after_or_equal_b(key_a, key_b):
+	#END_FLAG is always at the end
+	if key_b == END_FLAG:
+		return False
 	result = cmp(key_a, key_b)
 	if result == 1 or result ==0:
 		return True
@@ -228,8 +236,7 @@ def worker(worker_name, dictionary, queue, lock):
 						key = read_queue(queue, lock)
 						after_marker = key
 					else:
-						key = last_object.key
-						after_marker = key
+						after_marker = last_object.key
 			else:
 				key = read_queue(queue, lock)
 				after_marker = key
