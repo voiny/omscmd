@@ -227,6 +227,9 @@ def worker(worker_name, dictionary, queue, lock):
 					if after_marker == None or after_marker == "":
 						key = read_queue(queue, lock)
 						after_marker = key
+					else:
+						key = last_object.key
+						after_marker = key
 			else:
 				key = read_queue(queue, lock)
 				after_marker = key
@@ -289,10 +292,11 @@ def main():
 	merge_files()
 	time_end = datetime.datetime.now()
 	print ("Merging finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
+	print ("Output location: " + OUTPUT_FILE)
 	print ("Time cost: " + str(time_end - time_start) + "ms\n")
 	print ("Done!\n")
 
-def test2():
+def test():
 	if not SOURCE_FILE or not OUTPUT_FILE or not BUCKET_NAME or not ENDPOINT or not ACCESS_KEY or not SECRET_KEY or not SEPARATE_TIME:
 		PARSER.print_help()
 		sys.exit()	
@@ -322,41 +326,6 @@ def test2():
 	print ("Merging finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
 	print ("Time cost: " + str(time_end - time_start) + "ms\n")
 	print ("Done!\n")
-
-def test():
-	try:
-		obsClient = ObsClient(access_key_id=ACCESS_KEY, secret_access_key=SECRET_KEY, server=ENDPOINT, long_conn_mode=True)
-		#result = obsClient.listObjects(BUCKET_NAME, max_keys=1000, marker="")
-		counter = 0
-		t0 = datetime.datetime.now()
-		time = None
-		count = 0
-		error = 0
-
-		while True:
-			resp = obsClient.getObjectMetadata(BUCKET_NAME, 'spider/0000001A0B9211E7ACA400163E001B3D.jpeg')
-			if resp.status < 300:
-				#print('requestId:', resp.requestId)
-				#print('contentType:', resp.body.contentType)
-				#print('contentLength:', resp.body.contentLength)
-				#print('property:', dict(resp.header).get('property'))
-				count += 1
-				time = datetime.datetime.now() - t0
-			else:
-				print('errorCode:', resp.errorCode)
-				print('errorMessage:', resp.errorMessage)
-				error += 1
-			print("count: " + str(count) + ", error: " + str(error) + ", time: " + str(time))
-
-		#result, part = read_object_list(bucket, "fdsaf", 1)
-		#r, part = read_object_list(obsClient, "", 60000000)
-		#result = oss2.ObjectIterator(bucket, max_keys=2, marker='')
-		#part = islice(result, 3)
-		#print ("nextmarker: " + result.next_marker)
-	#	for b in part:
-	#		print b.key + " next marker: " + result.next_marker + " is dir: " + str(b.is_prefix()) + " last_modified: " + str(b.last_modified) + " size: " + str(b.size)
-	except:
-		print("err")
 
 if __name__ == '__main__':
 	#pdb.set_trace()

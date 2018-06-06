@@ -2,6 +2,8 @@
 
 from qiniu import Auth
 from qiniu import BucketManager
+import json
+import base64
 import pdb
 import sys
 import os
@@ -14,23 +16,21 @@ from multiprocessing import Pool
 import time
 import datetime
 
-APP_PREFIX = "increment_oss"
+APP_PREFIX = "increment_qiniu"
 THREAD_NUM = 1
 END_FLAG = APP_PREFIX + "END_FLAG" + str(datetime.datetime.now())
 #the number of keys that a section contains
 SECTION_SIZE = 10000
-WORKSPACE = "/data/tmp/increment_oss"
+WORKSPACE = "/data/tmp/increment_qiniu"
 SOURCE_FILE = None
 OUTPUT_FILE = None
-BUCKET_NAME = "perftest2"
+BUCKET_NAME = "perftest"
 SEPARATE_TIME = None
-ENDPOINT = ""
 ACCESS_KEY = ""
 SECRET_KEY = ""
 PARSER = OptionParser()
 PARSER.add_option("--ak", "--access_key",action="store", dest="access_key",help="Access key.")
 PARSER.add_option("--sk", "--secret_key",action="store", dest="secret_key",help="Secret key.")
-PARSER.add_option("-e", "--endpoint",action="store", dest="endpoint",help="Enpoint, leave empty for compatibility.")
 PARSER.add_option("-b", "--bucket_name",action="store", dest="bucket_name",help="Bucket name.")
 PARSER.add_option("-s", "--source_file",action="store", dest="source_file",help="Source file of full list of objects.")
 PARSER.add_option("-o", "--output_file",action="store", dest="output_file",help="Output file.")
@@ -41,13 +41,19 @@ PARSER.add_option("-t", "--thread_num",action="store", type="int", dest="thread_
 PARSER.add_option("-w","--workspace_path",action="store",dest="workspace_path",help="Path of workspace, " + WORKSPACE + " by default.")
 (options, args) = PARSER.parse_args()
 
-def datetime_string2timestamp_s(datetime_string):
-	time_array = time.strptime(datetime_string, "%Y-%m-%d %H:%M:%S")
+class MigrationObject:
+	def __init__(self):
+		self.time=0
+		self.key=''
+		self.size=0
+
+def datetime_string2timestamp_s(datetime_string, datetime_format):
+	time_array = time.strptime(datetime_string, datetime_format)
 	timestamp = time.mktime(time_array)
 	return int(timestamp)
 
-def datetime_string2timestamp_ms(datetime_string):
-	return datetime_string2timestamp_s(datetime_string) * 1000
+def datetime_string2timestamp_ms(datetime_string, datetime_format):
+	return datetime_string2timestamp_s(datetime_string, datetime_format) * 1000
 
 if options.thread_num:
 	THREAD_NUM = options.thread_num
@@ -70,20 +76,11 @@ if options.access_key:
 if options.secret_key:
 	SECRET_KEY = options.secret_key
 
-if options.endpoint:
-	ENDPOINT = options.endpoint
-
 if options.bucket_name:
 	BUCKET_NAME = options.bucket_name
 
 if options.separate_time:
-	SEPARATE_TIME = datetime_string2timestamp_ms(options.separate_time)
-
-class MigrationObject:
-        def __init__(self):
-                self.time=0
-                self.key=''
-                self.size=0
+	SEPARATE_TIME = datetime_string2timestamp_ms(options.separate_time, "%Y-%m-%d %H:%M:%S")
 
 def init():
 	if os.path.exists(WORKSPACE):
@@ -166,71 +163,60 @@ def put_dictionary_into_queue(dictionary, queue, lock):
 def is_time_a_after_b(time_a, time_b):
 	return time_a > time_b
 
-#In qiniu storage, marker is in hash format, but for convinience we pass in key as marker.
+def qiniumarker2marker(qiniu_marker):
+	if qiniu_marker == None or qiniu_marker == "":
+		return qiniu_marker
+	else:
+		string = base64.b64decode(qiniu_marker)
+		obj = eval(string)
+		return obj['k']
+
+def marker2qiniumarker(marker):
+	if marker == None or marker == "":
+		return marker
+	else:
+		qiniu_marker = {}
+		qiniu_marker['c'] = 0
+		qiniu_marker['k'] = marker
+		json_string = json.dumps(qiniu_marker)
+		return base64.b64encode(json_string)
+
 def read_object_list(bucket, after_marker, input_max_keys):
+	real_max_keys = input_max_keys
 	current_next_marker = after_marker
-	if current_next_marker != None:
-		ret, eof, info = bucket.list(BUCKET_NAME, current_next_marker, None, 1, None)
+	result = []
+	length = 0
+	if (input_max_keys > 1000):
+		real_max_keys = 1000
+	while True:
+		if length >= input_max_keys:
+			break
+		tmp_marker = marker2qiniumarker(current_next_marker)
+		ret, eof, info = bucket.list(BUCKET_NAME, None, tmp_marker, real_max_keys, None)
 		if ret != None:
-			# OK
-			if eof == True:
-				current_next_marker = ret.values()[0][0]['key']
+			if eof != True:
+				current_next_marker = ret.items()[0][1]
+				current_next_marker = qiniumarker2marker(current_next_marker)
 			else:
-				current_next_marker = ret.values()[1][0]['key']
-			print current_next_marker + " --------1"
-        result = []
-        length = 0
-        if (input_max_keys > 1000):
-                real_max_keys = 1000
-	eof = True
-        while True:
-                if len(result) >= input_max_keys:
-			if len(result) > 0:
-				current_next_marker = result[len(result) - 1].key
-				print current_next_marker + " --------2"
-                	break
-		tmp_result, eof, info = bucket.list(BUCKET_NAME, None, current_next_marker, real_max_keys, None)
-		if eof == False:
-			if tmp_result != None:
-				# OK
-				if eof == True:
-					current_next_marker = tmp_result.values()[0][0]['key']
-				else:
-					current_next_marker = tmp_result.values()[1][0]['key']
-				print current_next_marker + " --------3"
-                #tmp_result = obsClient.listObjects(BUCKET_NAME, max_keys=real_max_keys, marker=current_next_marker)
-                #current_next_marker = tmp_result.body.next_marker
-		if tmp_result == None:
-			if len(result) > 0:
-				current_next_marker = result[len(result) - 1].key
-				print current_next_marker + " --------4"
+				current_next_marker = None
+		if ret == None or len(ret.items()[0][1]) == 0:
+			current_next_marker = None
 			break
-               # if len(tmp_result.body.contents) == 0:
-               #         break
-                for obj in tmp_result.values()[1]:
-                        new_object = MigrationObject()
-                        new_object.last_modified = long(obj['putTime'])/10000
-                        new_object.key = obj['key']
-                        new_object.size = long(obj['fsize'])
-                        result.append(new_object)
+		objs = []
 		if eof == True:
-			print current_next_marker + " --------5"
-			break
-	return result, eof, current_next_marker
-	
-#	real_max_keys = input_max_keys
-#	if (input_max_keys > 1000):
-#		real_max_keys = 1000
-#	if after_marker != None:
-#		ret, eof, info = bucket.list(BUCKET_NAME, after_marker, None, 1, None)
-#		if len(ret.values()[0]) > 0:
-#			# OK
-#			ret.values()[0]
-#		ret, eof, info = bucket.list(BUCKET_NAME, after_marker+"xxx", None, 1, None)
-#	ret, eof, info = bucket.list(BUCKET_NAME, None, after_marker, input_max_keys, None)
-#	#result = oss2.ObjectIterator(bucket, max_keys=real_max_keys, marker=after_marker)
-#	return ret, eof, info
-#	#return result, islice(result, input_max_keys)
+			objs = ret.items()[0][1]
+		else:
+			objs = ret.items()[1][1]
+		for obj in objs:
+			new_object = MigrationObject()
+			new_object.last_modified = long(obj['putTime'])/10000
+			new_object.key = obj['key']
+			new_object.size = long(obj['fsize'])
+			result.append(new_object)
+			length += 1
+			if length >= input_max_keys:
+				break
+	return current_next_marker, result
 
 def format_object(obj):
 	last_modified = str(obj.last_modified)
@@ -247,37 +233,41 @@ def is_key_a_after_or_equal_b(key_a, key_b):
 
 def worker(worker_name, dictionary, queue, lock):
 	qiniu = Auth(ACCESS_KEY, SECRET_KEY)
-	bucket = BucketManager(qiniu)
-	#assert len(ret.get('items')) is not None
-	after_marker = read_queue(queue, lock)
-	eof = False
+        bucket = BucketManager(qiniu)
+	key = read_queue(queue, lock)
+	after_marker = key
 	print ("Worker: " + worker_name + " started.")
 	with open(WORKSPACE + "/" + worker_name, "a") as output_file:
 		separate_time = SEPARATE_TIME / 1000
 		section_size = int(SECTION_SIZE * 1.1)
 		while True:
-			if after_marker == "" and eof == False:
-				after_marker = None
-			elif eof == True:
-				after_marker = read_queue(queue, lock)
-				eof = False
-				continue
-			#else after_marker != "" and eof == False
-			display_after_marker = after_marker
-			if after_marker == None:
-				display_after_marker = ""
-			print ("Read round, after_marker: " + str(display_after_marker) + " -----------------------------------------------")			
-			objects, eof, after_marker = read_object_list(bucket, after_marker, section_size)
-			for obj in objects:
-				if obj.key in dictionary:
-					after_marker = obj.key
-				line = format_object(obj)
-				output_file.write(line + "\n")
-				print ("write collected line: " + line) 
-			if eof == True:
-				after_marker = read_queue(queue, lock)
-				eof = False
-				continue
+			if key == None:
+				break
+			print ("Read round, after_marker: " + after_marker + " -----------------------------------------------")			
+			after_marker, objects = read_object_list(bucket, after_marker, section_size)
+			length = len(objects)
+			if (length > 0):
+				last_object = objects[length - 1]
+				if is_key_a_after_or_equal_b(last_object.key, dictionary[key]):
+					key = read_queue(queue, lock)
+					after_marker = key
+				else:
+					if after_marker == None or after_marker == "":
+						key = read_queue(queue, lock)
+						after_marker = key
+					else:
+						key = last_object.key
+						after_marker = key
+			else:
+				key = read_queue(queue, lock)
+				after_marker = key
+			for i in range(length):
+				line = format_object(objects[i])
+				#print ("processing line: " + line) 
+				if is_time_a_after_b(objects[i].last_modified, separate_time) == True:
+					line = format_object(objects[i])
+					output_file.write(line + "\n")
+					print ("write collected line: " + line) 
 	print ("Worker: " + worker_name + " stopped.")
 
 def merge_files(): 
@@ -300,7 +290,7 @@ def merge_files():
 			output_file.close()
 
 def main():
-	if not SOURCE_FILE or not OUTPUT_FILE or not BUCKET_NAME  or not ACCESS_KEY or not SECRET_KEY or not SEPARATE_TIME:
+	if not SOURCE_FILE or not OUTPUT_FILE or not BUCKET_NAME or not ACCESS_KEY or not SECRET_KEY or not SEPARATE_TIME:
 		PARSER.print_help()
 		sys.exit()	
 	time_start = datetime.datetime.now()
@@ -319,9 +309,9 @@ def main():
 		put_dictionary_into_queue(dictionary, queue, lock)
 		print ("Putting marker sections into queue finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
 		print ("Starting threads...\n")
-		worker(APP_PREFIX, dictionary, queue, lock)
-	#	for i in range(THREAD_NUM):
-	#		pool.apply_async(worker, args=(APP_PREFIX + str(i), dictionary, queue, lock))
+#		worker(APP_PREFIX, dictionary, queue, lock)
+		for i in range(THREAD_NUM):
+			pool.apply_async(worker, args=(APP_PREFIX + str(i), dictionary, queue, lock))
 		pool.close()
 		pool.join()
 	print ("All thread processing finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
@@ -329,9 +319,10 @@ def main():
 	merge_files()
 	time_end = datetime.datetime.now()
 	print ("Merging finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
+	print ("Output location: " + OUTPUT_FILE)
 	print ("Time cost: " + str(time_end - time_start) + "ms\n")
 	print ("Done!\n")
 
 if __name__ == '__main__':
-	pdb.set_trace()
+	#pdb.set_trace()
 	main()

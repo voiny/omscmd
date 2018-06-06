@@ -266,37 +266,7 @@ def main():
 	merge_files()
 	time_end = datetime.datetime.now()
 	print ("Merging finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
-	print ("Time cost: " + str(time_end - time_start) + "ms\n")
-	print ("Done!\n")
-
-def test2():
-	if not SOURCE_FILE or not OUTPUT_FILE or not BUCKET_NAME or not ENDPOINT or not ACCESS_KEY or not SECRET_KEY or not SEPARATE_TIME:
-		PARSER.print_help()
-		sys.exit()	
-	time_start = datetime.datetime.now()
-	print ("Start time: " + time_start.strftime("%Y-%m-%d %H:%M:%S") + "\n")
-	print ("thread_num: " + str(THREAD_NUM) + ", workspace: " + WORKSPACE + ", separate_time: " + str(SEPARATE_TIME) + "(" + timestamp2datetime_string_ms(SEPARATE_TIME) +  ")\n")
-	init()
-	with multiprocessing.Manager() as manager:
-		#dictionary = manager.dict()
-		dictionary = {}
-		lock = manager.Lock()
-		queue = manager.Queue()
-		pool = Pool()
-		print ("Generating marker sections...\n")
-		generate_marker_section(SOURCE_FILE, dictionary, SECTION_SIZE)
-		print ("Genarating marker sections finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
-		dictionary[""] = 0
-		print ("Putting marker sections into queue...\n")
-		put_dictionary_into_queue(dictionary, queue, lock)
-		print ("Putting marker sections into queue finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
-		print ("Starting threads...\n")
-		worker(APP_PREFIX + str(0), dictionary, queue, lock)
-	print ("All thread processing finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
-	print ("Merging files...\n")
-	merge_files()
-	time_end = datetime.datetime.now()
-	print ("Merging finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
+	print ("Output location: " + OUTPUT_FILE)
 	print ("Time cost: " + str(time_end - time_start) + "ms\n")
 	print ("Done!\n")
 
