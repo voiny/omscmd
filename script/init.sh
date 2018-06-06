@@ -5,8 +5,10 @@ source ./env.sh
 yum -y install cloud-init
 
 cd ${WORKSPACE}
-wget -O ${WORKSPACE}/obssdk.zip https://support.huaweicloud.com/devg-obs_python_sdk_doc_zh/resource/eSDK_Storage_OBS_V2.1.22_Python.zip
+rm -rf obssdk.zip
+wget -O ${WORKSPACE}/obssdk.zip http://static.huaweicloud.com/upload/files/sdk/python.zip
 unzip obssdk.zip
+unzip eSDK*.zip
 cd ${WORKSPACE}/src
 python setup.py install
 

@@ -26,8 +26,8 @@ export SERVER_ADDRESS="https://127.0.0.1:8099/v1/0000000000"
 export NAME='omscmd'
 export ENABLE_KMS='false'
 export DESC_PREFIX='Task_3ocs-public'
-export WORKSPACE=/data/tmp/${NAME}
-export OBJ_CNT_IN_SPLIT=499
+export WORKSPACE=/root/hj-analyze-result/newtmp/${NAME}
+export OBJ_CNT_IN_SPLIT=600000
 export THREAD_PER_TASK=50
 export DB_PWD='xxx'
 
