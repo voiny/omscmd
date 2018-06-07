@@ -193,6 +193,8 @@ def read_object_list(obsClient, after_marker, input_max_keys):
 			length += 1
 			if length >= input_max_keys:
 				break
+		if current_next_marker == None:
+			break
 	return tmp_result, result
 
 def format_object(obj):
@@ -290,9 +292,9 @@ def main():
 		put_dictionary_into_queue(dictionary, queue, lock)
 		print ("Putting marker sections into queue finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
 		print ("Starting threads...\n")
-		worker(APP_PREFIX+"0", dictionary, queue, lock)
-		#for i in range(THREAD_NUM):
-			#pool.apply_async(worker, args=(APP_PREFIX + str(i), dictionary, queue, lock))
+		#worker(APP_PREFIX+"0", dictionary, queue, lock)
+		for i in range(THREAD_NUM):
+			pool.apply_async(worker, args=(APP_PREFIX + str(i), dictionary, queue, lock))
 		pool.close()
 		pool.join()
 	print ("All thread processing finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
@@ -336,5 +338,5 @@ def test():
 	print ("Done!\n")
 
 if __name__ == '__main__':
-	pdb.set_trace()
+	#pdb.set_trace()
 	main()

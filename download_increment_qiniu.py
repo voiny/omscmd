@@ -251,6 +251,7 @@ def worker(worker_name, dictionary, queue, lock):
 		section_size = int(SECTION_SIZE * 1.1)
 		while True:
 			if key == None:
+				print ("key is None")
 				break
 			print ("Read round, after_marker: " + after_marker + " -----------------------------------------------")			
 			after_marker, objects = read_object_list(bucket, after_marker, section_size)
