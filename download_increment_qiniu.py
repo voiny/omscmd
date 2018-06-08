@@ -228,7 +228,10 @@ def read_object_list(bucket, after_marker, input_max_keys):
 
 def format_object(obj):
 	last_modified = str(obj.last_modified)
-	return last_modified  + " " + obj.key + " " + str(obj.size)
+	key = obj.key
+	#key = obj.key.replace("\n", "")
+	#key = key.replace("\r", "")
+	return last_modified  + " " + key + " " + str(obj.size)
 
 def is_key_a_after_or_equal_b(key_a, key_b):
 	#END_FLAG is always at the end
@@ -276,7 +279,7 @@ def worker(worker_name, dictionary, queue, lock):
 				if is_time_a_after_b(objects[i].last_modified, separate_time) == True:
 					line = format_object(objects[i])
 					output_file.write(line + "\n")
-					print ("write collected line: " + line) 
+					print (worker_name + " writes collected line: " + line) 
 	print ("Worker: " + worker_name + " stopped.")
 
 def merge_files(): 
