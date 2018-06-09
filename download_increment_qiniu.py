@@ -31,10 +31,12 @@ WORKSPACE = "/data/tmp/increment_qiniu"
 SOURCE_FILE = None
 OUTPUT_FILE = None
 BUCKET_NAME = "perftest"
+MERGE = False
 SEPARATE_TIME = None
 ACCESS_KEY = ""
 SECRET_KEY = ""
 PARSER = OptionParser()
+PARSER.add_option("-m", "--merge",action="store_true", default=False, dest="merge",help="Merge only.")
 PARSER.add_option("--ak", "--access_key",action="store", dest="access_key",help="Access key.")
 PARSER.add_option("--sk", "--secret_key",action="store", dest="secret_key",help="Secret key.")
 PARSER.add_option("-b", "--bucket_name",action="store", dest="bucket_name",help="Bucket name.")
@@ -60,6 +62,9 @@ def datetime_string2timestamp_s(datetime_string, datetime_format):
 
 def datetime_string2timestamp_ms(datetime_string, datetime_format):
 	return datetime_string2timestamp_s(datetime_string, datetime_format) * 1000
+
+if options.merge == True:
+	MERGE = True
 
 if options.thread_num:
 	THREAD_NUM = options.thread_num
@@ -304,29 +309,30 @@ def merge_files():
 def main():
 	if not SOURCE_FILE or not OUTPUT_FILE or not BUCKET_NAME or not ACCESS_KEY or not SECRET_KEY or not SEPARATE_TIME:
 		PARSER.print_help()
-		sys.exit()	
+		sys.exit()
 	time_start = datetime.datetime.now()
 	print ("Start time: " + time_start.strftime("%Y-%m-%d %H:%M:%S") + "\n")
 	print ("thread_num: " + str(THREAD_NUM) + ", workspace: " + WORKSPACE + ", separate_time: " + str(SEPARATE_TIME) + "(" + timestamp2datetime_string_ms(SEPARATE_TIME) +  ")\n")
-	init()
-	with multiprocessing.Manager() as manager:
-		dictionary = manager.dict()
-		lock = manager.Lock()
-		queue = manager.Queue()
-		pool = Pool(THREAD_NUM)
-		print ("Generating marker sections...\n")
-		generate_marker_section(SOURCE_FILE, dictionary, SECTION_SIZE)
-		print ("Genarating marker sections finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
-		print ("Putting marker sections into queue...\n")
-		put_dictionary_into_queue(dictionary, queue, lock)
-		print ("Putting marker sections into queue finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
-		print ("Starting threads...\n")
-		#worker(APP_PREFIX + "0", dictionary, queue, lock)
-		for i in range(THREAD_NUM):
-			pool.apply_async(worker, args=(APP_PREFIX + str(i), dictionary, queue, lock))
-		pool.close()
-		pool.join()
-	print ("All thread processing finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
+	if MERGE == False:
+		init()
+		with multiprocessing.Manager() as manager:
+			dictionary = manager.dict()
+			lock = manager.Lock()
+			queue = manager.Queue()
+			pool = Pool(THREAD_NUM)
+			print ("Generating marker sections...\n")
+			generate_marker_section(SOURCE_FILE, dictionary, SECTION_SIZE)
+			print ("Genarating marker sections finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
+			print ("Putting marker sections into queue...\n")
+			put_dictionary_into_queue(dictionary, queue, lock)
+			print ("Putting marker sections into queue finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
+			print ("Starting threads...\n")
+			#worker(APP_PREFIX + "0", dictionary, queue, lock)
+			for i in range(THREAD_NUM):
+				pool.apply_async(worker, args=(APP_PREFIX + str(i), dictionary, queue, lock))
+			pool.close()
+			pool.join()
+		print ("All thread processing finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
 	print ("Merging files...\n")
 	merge_files()
 	time_end = datetime.datetime.now()

@@ -38,6 +38,7 @@ def generate_big_dic(file_path):
 			parts = [time, name, size]
 			store = None
 			if name in BIG_DIC:
+				print(name + "\n")
 				store = BIG_DIC[name]
 			if store == None:
 				BIG_DIC[name] = parts
