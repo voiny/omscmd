@@ -24,7 +24,8 @@ for i in $*; do
 	region_id=`echo $i | awk -F, '{print $2;}'`
 	dst_file="${OUTPUT_PATH}/result-${bucket_name}"
 	rm -rf ${dst_file}
-	aws --endpoint-url=http://obs.myhwclouds.com --region=${region_id} s3 ls s3://${bucket_name}/ --recursive | tee ${dst_file} &
+	echo aws --endpoint-url=http://obs.${region_id}.myhwclouds.com --region=${region_id} s3 ls s3://${bucket_name}/ --recursive | tee ${dst_file}
+	aws --endpoint-url=http://obs.${region_id}.myhwclouds.com --region=${region_id} s3 ls s3://${bucket_name}/ --recursive | tee ${dst_file} &
 done
 
 wait
