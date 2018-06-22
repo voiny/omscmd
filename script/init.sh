@@ -42,6 +42,19 @@ elif [ "$SRCTOOL" == "qshell" ]; then
 	cp /tmp/qshell-linux-x64 /usr/bin/qshell
 	chmod 550 /usr/bin/qshell
 	./conf_qshell.sh
+elif [ "$SRCTOOL" == "bcdcmd" ]; then
+	wget -O /tmp/bce-python-sdk.zip https://sdk.bce.baidu.com/console-sdk/bce-python-sdk-0.8.19.zip
+	cd /tmp
+	unzip bce-python-sdk.zip
+	cd /tmp/bce-python-sdk-0.8.19
+	python setup.py install
+	
+	wget -O /tmp/bcecmd.zip https://sdk.bce.baidu.com/console-sdk/linux-bcecmd-0.2.2.zip
+	cd /tmp
+	unzip bcecmd.zip
+	/usr/bin/cp -f bcecmd /usr/bin/
+	cd ${ORIGINAL_DIRECTORY}
+	./conf_bcecmd.sh
 else
 	cd ${WORKSPACE}
 	wget https://bootstrap.pypa.io/get-pip.py
