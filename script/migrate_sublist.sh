@@ -55,6 +55,9 @@ function migrate_command() {
 	elif [ "${SRCTOOL}" == "qshell" ];then
 		echo qrsctl get ${SRCBUCKETNAME} "${SRCPATH_SHORT}${LINE}" "${TMP_FILE}"
 		qrsctl get ${SRCBUCKETNAME} "${SRCPATH_SHORT}${LINE}" "${TMP_FILE}"
+	elif [ "${SRCTOOL}" == "bcecmd" ];then
+		echo bcecmd bos cp "bos://${SRCBUCKETNAME}/${SRCPATH_SHORT}${LINE}" "${TMP_FILE}"
+		bcecmd bos cp "bos://${SRCBUCKETNAME}/${SRCPATH_SHORT}${LINE}" "${TMP_FILE}"
 	else
 		echo Not supported
 		exit
