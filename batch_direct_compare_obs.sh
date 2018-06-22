@@ -2,9 +2,31 @@
 
 AK=$1
 SK=$2
-PAIRS=("cn-beijing,bucketname"
+#"cn-beijing,ys-public"
+PAIRS=(
+"cn-beijing,accesslog-ys"
+"cn-beijing,oss-transfer"
+"cn-beijing,test-biaozhun"
+"cn-beijing,test-zhangrunshi"
+"cn-beijing,test-zhangrunshi-1"
+"cn-hangzhou,vmsdata"
+"cn-beijing,ys-csupload"
+"cn-beijing,ys-diandian"
+"cn-beijing,ys-diandiantaobao"
+"cn-beijing,ys-jsbc-test"
+"cn-beijing,ys-onsite"
+"cn-beijing,ys-shuchu"
+"cn-beijing,ys-wechat"
+"cn-beijing,ys-ytl"
+"cn-beijing,ys-zhiyun"
+"cn-beijing,ys-zhuanma"
+"cn-hangzhou,yshz-public"
+"cn-beijing,yunshi-cdn"
+"cn-shanghai,zbtest-huadong2"
+"cn-hangzhou,zcz-test"
 )
-WORK_THREAD_NUM=1
+
+WORK_THREAD_NUM=128
 #Converted list path informat of timestamp(13) key size
 LIST_PATH="/data/tmp/batch_download_increment_lists"
 OUTPUT_PATH="/data/tmp/batch_direct_compare"
