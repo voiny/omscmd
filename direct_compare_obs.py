@@ -183,8 +183,7 @@ def read_object_info(obsClient, key):
 			# size
 			size = int(resp.header[0][1])
 			# datetime
-			resp.header[2][1]
-			t = datetime.datetime.strptime(resp.header[2][1], "%a, %d %b %Y %H:%M:%S GMT")	
+			t = datetime.datetime.strptime(resp.header[3][1], "%a, %d %b %Y %H:%M:%S GMT")	
 			obj.key = key
 			obj.time = int(time.mktime(t.timetuple())) * 1000 + 8 * 3600000
 			obj.size = size
