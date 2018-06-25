@@ -28,7 +28,7 @@ function do_remove() {
 function remove_command() {
 	LINE="$*"
 	echo TASK ${TASK_NAME} is removing ${LINE} ...
-	echo aws --endpoint-url=http://obs.myhwclouds.com --region=${DSTREGION} --profile=dst s3 rm "s3://${DSTBUCKETNAME}${DSTPATH_SHORT}${LINE}"
+	echo aws --endpoint-url=http://obs.${DSTREGION}.myhwclouds.com --region=${DSTREGION} --profile=dst s3 rm "s3://${DSTBUCKETNAME}${DSTPATH_SHORT}${LINE}"
 	aws --endpoint-url=http://obs.${DSTREGION}.myhwclouds.com --region=${DSTREGION} --profile=dst s3 rm "s3://${DSTBUCKETNAME}${DSTPATH_SHORT}${LINE}"
 }
 
