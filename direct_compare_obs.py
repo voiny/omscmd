@@ -183,7 +183,11 @@ def read_object_info(obsClient, key):
 			# size
 			size = int(resp.header[0][1])
 			# datetime
-			t = datetime.datetime.strptime(resp.header[3][1], "%a, %d %b %Y %H:%M:%S GMT")	
+			t = None
+			if resp.header[2][0] == "last-modified":
+				t = datetime.datetime.strptime(resp.header[2][1], "%a, %d %b %Y %H:%M:%S GMT")	
+			else:
+				t = datetime.datetime.strptime(resp.header[3][1], "%a, %d %b %Y %H:%M:%S GMT")	
 			obj.key = key
 			obj.time = int(time.mktime(t.timetuple())) * 1000 + 8 * 3600000
 			obj.size = size
@@ -259,7 +263,7 @@ def main():
 		print ("Generating dictionaries...\n")
 		dictionaries = generate_dictionaries(SOURCE_FILE, THREAD_NUM)
 		print ("Genarating dictionaries finished at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
-	#	worker(APP_PREFIX+"0", dictionaries[0])
+		worker(APP_PREFIX+"0", dictionaries[0])
 		for i in range(THREAD_NUM):
 			pool.apply_async(worker, args=(APP_PREFIX + str(i), dictionaries[i]))
 		pool.close()
