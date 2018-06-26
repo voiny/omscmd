@@ -62,7 +62,7 @@ function migrate_command() {
 		echo Not supported
 		exit
 	fi
-	if [ -d "${TMP_FILE}" ];then
+	if [ -f "${TMP_FILE}" ];then
 		echo aws --endpoint-url=http://obs.myhwclouds.com --region=${DSTREGION} --profile=dst s3 cp ${TMP_FILE} "s3://${DSTBUCKETNAME}${DSTPATH_SHORT}${LINE}"
 		aws --endpoint-url=http://obs.myhwclouds.com --region=${DSTREGION} --profile=dst s3 cp ${TMP_FILE} "s3://${DSTBUCKETNAME}${DSTPATH_SHORT}${LINE}" >> ${UPLOAD_LOG_PATH}/${TASK_NAME}_upload.log
 
