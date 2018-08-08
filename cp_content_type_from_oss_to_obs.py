@@ -22,7 +22,6 @@ from multiprocessing import Pool
 import time
 import datetime
 
-LISTING_FINISH = False
 APP_PREFIX = "cp_content_type"
 THREAD_NUM = 1
 END_FLAG = APP_PREFIX + "END_FLAG" + str(datetime.datetime.now())
@@ -113,7 +112,6 @@ def read_queue(queue, lock):
 
 def worker(worker_name, queue, lock):
 	print ("Worker: " + worker_name + " started.")
-	global LISTING_FINISH
 	headers = CopyObjectHeader()
 	headers.directive = "REPLACE"
 	oss_auth = oss2.Auth(OSS_ACCESS_KEY, OSS_SECRET_KEY)
@@ -139,15 +137,11 @@ def worker(worker_name, queue, lock):
 	        	else:    
 	        		print(worker_name + " - Error: oss://" + OSS_BUCKET_NAME + "/" + mo.key + " -> " + "obs://" + OBS_BUCKET_NAME + "/" + OBS_PATH + mo.key + " Content-Type: from " + from_content_type + " to " + mo.content_type + ", ErrorCode: " + str(resp.errorCode) + ", ErrorMessage: " + resp.errorMessage)
 		else:
-			if LISTING_FINISH == True:
-				print("Thread: " + worker_name + " exited.\n")
-				obs_client.close()
-				return
-			else:
-				time.sleep(1)
+			print("Thread: " + worker_name + " exited.\n")
+			obs_client.close()
+			return
 
 def list_src(queue, lock, bucket_name, full_endpoint, ak, sk):
-	global LISTING_FINISH
 	auth = oss2.Auth(ak, sk)
 	bucket = oss2.Bucket(auth, full_endpoint, bucket_name)
 	i = 0
@@ -164,7 +158,6 @@ def list_src(queue, lock, bucket_name, full_endpoint, ak, sk):
 	sys.stdout.write("\r")
 	sys.stdout.flush()
 	print("\n")
-	LISTING_FINISH = True
 
 def main():
 	if not OSS_BUCKET_NAME or not OBS_BUCKET_NAME or not OSS_ENDPOINT or not OSS_ACCESS_KEY or not OSS_SECRET_KEY or not OBS_ACCESS_KEY or not OBS_SECRET_KEY:
@@ -183,7 +176,7 @@ def main():
 		list_src(queue, lock, OSS_BUCKET_NAME, OSS_ENDPOINT, OSS_ACCESS_KEY, OSS_SECRET_KEY)
 		print ("Finished listing object at: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
 		print ("Starting threads...\n")
-		#worker(APP_PREFIX + "0", queue, lock)
+	#	worker(APP_PREFIX + "0", queue, lock)
 		for i in range(THREAD_NUM):
 			pool.apply_async(worker, args=(APP_PREFIX + str(i), queue, lock))
 		pool.close()
