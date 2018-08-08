@@ -35,6 +35,7 @@ OSS_SECRET_KEY = ""
 OBS_ACCESS_KEY = ""
 OBS_SECRET_KEY = ""
 OBS_PATH = ""
+DISPLAY_SUCCESS = False
 PARSER = OptionParser()
 PARSER.add_option("--ossak", "--oss_access_key",action="store", dest="oss_access_key",help="OSS Access key.")
 PARSER.add_option("--osssk", "--oss_secret_key",action="store", dest="oss_secret_key",help="OSS Secret key.")
@@ -45,6 +46,7 @@ PARSER.add_option("--obse", "--obs_endpoint",action="store", dest="obs_endpoint"
 PARSER.add_option("--ossb", "--oss_bucket_name",action="store", dest="oss_bucket_name",help="OSS bucket name.")
 PARSER.add_option("--obsb", "--obs_bucket_name",action="store", dest="obs_bucket_name",help="OBS bucket name.")
 PARSER.add_option("--obsp", "--obs_path",action="store", dest="obs_path",help="OBS destination path. For root, input \"/\" or ignore this parameter, for other path, input \"/other_path_name/\"")
+PARSER.add_option("--ds", "--display_success",action="store_true", default=False, dest="display_success",help="Display successful operation log.")
 PARSER.add_option("-t", "--thread_num",action="store", type="int", dest="thread_num",help="Number of thread(s).")
 PARSER.add_option("-w","--workspace_path",action="store",dest="workspace_path",help="Path of workspace, " + WORKSPACE + " by default.")
 (options, args) = PARSER.parse_args()
@@ -84,6 +86,9 @@ if options.oss_bucket_name:
 if options.obs_bucket_name:
 	OBS_BUCKET_NAME = options.obs_bucket_name
 
+if options.display_success:
+	DISPLAY_SUCCESS = options.display_success
+
 if options.obs_path:
 	OBS_PATH = options.obs_path[1:]
 
@@ -110,17 +115,28 @@ def read_queue(queue, lock):
 	lock.release()
 	return result
 
+def head_oss_object(oss_bucket, key):
+	max_retry = 10
+	while max_retry > 0:
+		meta = oss_bucket.head_object(key)
+	        if meta == None or not meta or meta.status != 200 or meta.content_type == None:
+			max_retry = max_retry - 1
+			time.sleep(10)
+			continue
+		return meta
+	return None
+		
 def worker(worker_name, queue, lock):
 	print ("Worker: " + worker_name + " started.")
 	headers = CopyObjectHeader()
 	headers.directive = "REPLACE"
 	oss_auth = oss2.Auth(OSS_ACCESS_KEY, OSS_SECRET_KEY)
-	oss_bucket = oss2.Bucket(oss_auth,OSS_ENDPOINT, OSS_BUCKET_NAME)
-	obs_client = ObsClient(access_key_id=OBS_ACCESS_KEY, secret_access_key=OBS_SECRET_KEY, server=OBS_ENDPOINT, long_conn_mode=True)
+	oss_bucket = oss2.Bucket(oss_auth, OSS_ENDPOINT, OSS_BUCKET_NAME, connect_timeout=30)
+	obs_client = ObsClient(access_key_id=OBS_ACCESS_KEY, secret_access_key=OBS_SECRET_KEY, server=OBS_ENDPOINT, long_conn_mode=False)
 	while True:
 		mo = read_queue(queue, lock)
 		if mo != None:
-			meta = oss_bucket.head_object(mo.key)                                                                                                                                                                                                                                        	
+			meta = head_oss_object(oss_bucket, mo.key)
 	        	if meta == None or meta.status != 200 or meta.content_type == None:
 	        		print(worker_name + " - Meta is None for key: " + mo.key)
 	        		continue
