@@ -2,7 +2,7 @@
 
 ## Installation
 0. Install git: yum install -y git
-1. Goto install path and clone repository: clone https://github.com/joejang/omscmd.git
+1. Goto install path and clone repository: git clone https://github.com/joejang/omscmd.git
 2. Goto omscmd script path: cd omscmd/script
 3. Install basic tools, oss sdk and obs sdk: ./install_basic_tools.sh
 
