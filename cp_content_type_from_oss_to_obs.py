@@ -13,9 +13,9 @@ import glob
 from optparse import OptionParser
 from itertools import islice
 
-from com.obs.client.obs_client import ObsClient
-from com.obs.client.obs_client import PutObjectHeader
-from com.obs.client.obs_client import CopyObjectHeader
+from obs import ObsClient
+from obs import PutObjectHeader
+from obs import CopyObjectHeader
 
 import multiprocessing
 from multiprocessing import Pool
