@@ -2,14 +2,15 @@
 
 AK=$1
 SK=$2
-#"cn-beijing,ys-public"
-PAIRS=(
-"cn-beijing,bucketname"
-)
+#PAIRS=("oss-cn-beijing,bucket")
+PAIRS=()
+
 
 WORK_THREAD_NUM=128
 #Converted list path informat of timestamp(13) key size
-LIST_PATH="/data/tmp/batch_download_increment_lists"
+#LIST_PATH="/data/tmp/batch_download_increment_lists"
+LIST_PATH="/data/tmp/omscmd/compare_result/diff"
+#LIST_PATH="/data/tmp/batch_direct_compare"
 OUTPUT_PATH="/data/tmp/batch_direct_compare"
 
 function usage() {

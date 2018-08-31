@@ -2,12 +2,13 @@
 
 AK=$1
 SK=$2
-PAIRS=("oss-cn-beijing,bucketname"
-)
-SEPARATE_TIME="2018-05-20 00:00:00"
+#PAIRS=("oss-cn-beijing,bucket")
+PAIRS=()
+
+SEPARATE_TIME="2018-07-11 12:00:00"
 ENDPOINT_URL_POSTFIX=".aliyuncs.com"
 SECTION_SIZE=10000
-WORK_THREAD_NUM=100
+WORK_THREAD_NUM=128
 #Converted list path informat of timestamp(13) key size
 LIST_PATH="/data/conv_oss"
 OUTPUT_PATH="/data/tmp/batch_download_increment_lists"

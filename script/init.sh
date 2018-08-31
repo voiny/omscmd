@@ -3,6 +3,8 @@
 source ./env.sh
 
 yum -y install cloud-init
+yum -y install epel-release
+yum -y install jq
 
 cd ${WORKSPACE}
 rm -rf obssdk.zip

@@ -32,10 +32,16 @@ function convert_list_to_task() {
 	done
 	echo "#!/bin/bash" >${ONE_LIST_FILE}_task.sh
 	echo "" >>${ONE_LIST_FILE}_task.sh
+#	echo "DOMAIN_NAME=${DOMAIN_NAME}" >>${ONE_LIST_FILE}_task.sh
+#	echo "TENANT_NAME=${TENANT_NAME}" >>${ONE_LIST_FILE}_task.sh
+#	echo "TENANT_PASSWORD=${TENANT_PASSWORD}" >>${ONE_LIST_FILE}_task.sh
+#	echo "PROJECT_ID=${PROJECT_ID}" >>${ONE_LIST_FILE}_task.sh
 	echo "PARAM1=\$1">>${ONE_LIST_FILE}_task.sh
 	echo "PARAM2=\$2">>${ONE_LIST_FILE}_task.sh
 	echo "function start() {">>${ONE_LIST_FILE}_task.sh
-	echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:${IAM_TOKEN}' --insecure -X POST --data '{\"src_node\":{\"region\":\"${SRCREGION}\",\"ak\":\"${SRCAK}\",\"sk\":\"${SRCSK}\",\"object_key\":{\"path\":\"${SRCPATH_SHORT}\",\"keys\":[${KEYS}]},\"bucket\":\"${SRCBUCKETNAME}\",\"cloud_type\":\"${SRCCLOUDTYPE}\"},\"thread_num\":${THREAD_PER_TASK},\"enableKMS\":${ENABLE_KMS},\"description\":\"${DESC_PREFIX}_${ONE_LIST_FILE}\",\"dst_node\":{\"region\":\"${DSTREGION}\",\"ak\":\"${DSTAK}\",\"sk\":\"${DSTSK}\",\"object_key\":\"${DSTPATH_SHORT}\",\"bucket\":\"${DSTBUCKETNAME}\",\"cloud_type\":\"OTC\"}}' ${SERVER_ADDRESS}/objectstorage/task">> ${ONE_LIST_FILE}_task.sh
+	echo "curl -H 'Content-Type:application/json' --insecure -X POST --data '{\"auth\":{\"identity\":{\"methods\":[\"password\"],\"password\":{\"user\":{\"name\":\"${TENANT_NAME}\",\"password\":\"${TENANT_PASSWORD}\",\"domain\":{\"name\":\"${DOMAIN_NAME}\"}}}},\"scope\":{\"project\":{\"id\":\"${PROJECT_ID}\"}}}}' https://iam.cn-north-1.myhuaweicloud.com/v3/auth/tokens -D /tmp/${ONE_LIST_FILE}_head_tmp.txt">> ${ONE_LIST_FILE}_task.sh
+	echo "CURRENT_IAM_TOKEN=\`cat /tmp/${ONE_LIST_FILE}_head_tmp.txt |grep X-Subject-Token: | sed -n 's/X-Subject-Token: //p'\`" >>${ONE_LIST_FILE}_task.sh
+	echo "curl -H 'Content-Type:application/json' -H \"X-Auth-Token:\${CURRENT_IAM_TOKEN}\" --insecure -X POST --data '{\"src_node\":{\"region\":\"${SRCREGION}\",\"ak\":\"${SRCAK}\",\"sk\":\"${SRCSK}\",\"object_key\":{\"path\":\"${SRCPATH_SHORT}\",\"keys\":[${KEYS}]},\"bucket\":\"${SRCBUCKETNAME}\",\"cloud_type\":\"${SRCCLOUDTYPE}\"},\"thread_num\":${THREAD_PER_TASK},\"enableKMS\":${ENABLE_KMS},\"description\":\"${DESC_PREFIX}_${ONE_LIST_FILE}\",\"dst_node\":{\"region\":\"${DSTREGION}\",\"ak\":\"${DSTAK}\",\"sk\":\"${DSTSK}\",\"object_key\":\"${DSTPATH_SHORT}\",\"bucket\":\"${DSTBUCKETNAME}\",\"cloud_type\":\"HEC\"}}' ${SERVER_ADDRESS}/objectstorage/task">> ${ONE_LIST_FILE}_task.sh
 	echo "}" >> ${ONE_LIST_FILE}_task.sh
 	echo "function stop() {" >> ${ONE_LIST_FILE}_task.sh
 	echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:${IAM_TOKEN}' --insecure -X PUT --data '{\"operation\":\"stop\"}' ${SERVER_ADDRESS}/objectstorage/task/\${PARAM2}" >> ${ONE_LIST_FILE}_task.sh

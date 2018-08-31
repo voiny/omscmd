@@ -1,33 +1,39 @@
 #!/bin/bash
 
 # AWS / Aliyun / Qiniu
-export SRCCLOUDTYPE='Qiniu'
+export SRCCLOUDTYPE='Aliyun'
 #SRCTOOL = aws / ossutil / qshell
-export SRCTOOL='qshell'
+export SRCTOOL='ossutil'
 #for OSS cn-beijing is OK, oss-cn-beijing is NOK
-export SRCREGION='z0'
+export SRCREGION='cn-beijing'
 export SRCAK=''
 export SRCSK=''
-export SRCBUCKETNAME='ocs3-public'
+#export SRCAK='LTAI7JYINLrQcd12'
+#export SRCSK='uJyVHxEwVN4TKnowLxcyAQ82gsMlM2'
+export SRCBUCKETNAME='api-auto-test'
 export SRCPATH_SHORT='/'
 #export SRCPATH_SHORT='/xxx/'
 export SRCPATH="oss://${SRCBUCKETNAME}${SRCPATH_SHORT}"
-export DSTREGION='cn-east-2'
+export DSTREGION='cn-north-1'
 export DSTAK=''
 export DSTSK=''
 #DSTBUCKETNAME should not contain 's3://'
-export DSTBUCKETNAME='ocs3-public'
+export DSTBUCKETNAME=''
 #DSTPATH should not contain 's3://'
 #export DSTPATH_SHORT='xxx/' (set '/' for root)
 export DSTPATH_SHORT='/'
 
-export SERVER_ADDRESS="https://127.0.0.1:8099/v1/0000000000"
-#export SERVER_ADDRESS="https://oms.myhuaweicloud.com/v1/{project_id}/objectstorage/task"
+#export SERVER_ADDRESS="https://127.0.0.1:8099/v1/0000000000"
+export DOMAIN_NAME=''
+export TENANT_NAME=''
+export TENANT_PASSWORD=''
+export PROJECT_ID=''
+export SERVER_ADDRESS="https://oms.myhuaweicloud.com/v1/${PROJECT_ID}"
 export NAME='omscmd'
 export ENABLE_KMS='false'
-export DESC_PREFIX='Task_3ocs-public'
+export DESC_PREFIX='Task'
 export WORKSPACE=/data/tmp/${NAME}
-export OBJ_CNT_IN_SPLIT=600000
+export OBJ_CNT_IN_SPLIT=50
 export THREAD_PER_TASK=50
 export DB_PWD='xxx'
 
