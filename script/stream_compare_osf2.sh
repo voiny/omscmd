@@ -3,23 +3,23 @@
 SRCLIST=""
 THREADNUM=4
 DSTREGION="cn-north-1"
-DSTBUCKETNAME='10002'
-WORKSPACE="/data/tmp/stream_compare_$$"
+DSTBUCKET=''
+WORKSPACE="/data/tmp/stream_compare"
+MAXTRY=1
 
 function download()
 {
 	thread_name=$1
 	line=$2
 	download_file_full_path=${WORKSPACE}/${thread_name}_download
-	#echo aws --endpoint-url=http://obs.myhwclouds.com --region=${DSTREGION} --profile=dst s3 cp ${TMP_FILE} "s3://${DSTBUCKETNAME}${DSTPATH_SHORT}${LINE}"
 	rm -rf ${download_file_full_path}
 	i=0
-	while [[ ! -f "${download_file_full_path}" && $i -le 10 ]]
+	while [[ ! -f "${download_file_full_path}" && ${i} -lt ${MAXTRY} ]]
 	do
-		aws --endpoint-url=http://obs.${DSTREGION}.myhwclouds.com --region=${DSTREGION} --profile=dst s3 cp "s3://${DSTBUCKETNAME}/${line}" "${download_file_full_path}" > /dev/null
+		aws --endpoint-url=http://obs.${DSTREGION}.myhwclouds.com --region=${DSTREGION} --profile=dst s3 cp "s3://${DSTBUCKET}/${line}" "${download_file_full_path}" > /dev/null
 		let i+=1
 	done
-	if [ $i > 10 ]; then
+	if [ ${i} -gt ${MAXTRY} ]; then
 		echo 0
 	else
 		echo 1
@@ -30,14 +30,15 @@ function exist_on_obs()
 {
 	thread_name=$1
 	line=$2
-	result=""
+	result=1
 	i=0
-	while [[ ! ("${result}" =~ "$line") && $i -le 10 ]]
+	while [[ "${result}" != "0" && ${i} -lt ${MAXTRY} ]]
 	do
-		result=`aws --endpoint-url=http://obs.${DSTREGION}.myhwclouds.com --region=${DSTREGION} --profile=dst s3 ls \"s3://${DSTBUCKETNAME}/${line}\"`
+		aws --endpoint-url=http://obs.${DSTREGION}.myhwclouds.com --region=${DSTREGION} --profile=dst s3 ls "s3://${DSTBUCKET}/${line}" > /dev/null
+		result="$?"
 		let i+=1
 	done
-	if [ $result =~ $line ]; then
+	if [[ "${result}" == "0" ]]; then
 		echo 1
 	else
 		echo 0
@@ -48,12 +49,14 @@ function verify_hash()
 {
 	thread_name=$1
 	list=$2
-	key=`echo $list | awk '{for (i=2;i<NF-2;i++) printf("%s ", $i); printf("%s", NF)}'`
-	hash_in_list=`echo $list | awk '{printf("%s", NF);}'`
+	key=`echo $list | awk '{for (i=2;i<=NF-2;i++) printf("%s ", $i);}'|sed 's/ $//'`
+	hash_in_list=`echo $list | awk '{printf("%s", $NF);}'`
 	local_file_hash=""
 	result=0
-	if [[ "exist_on_obs \"$thread_name\" \"$key\"" == "1" ]]; then
-		if [[ "download \"$thread_name\" \"$key\"" == "1" ]]; then
+	exist_on_obs_result=`exist_on_obs "${thread_name}" "${key}"`
+	if [[ "${exist_on_obs_result}" == "1" ]]; then
+		download_result=`download "${thread_name}" "${key}"`
+		if [[ "${download_result}" == "1" ]]; then
 			download_file_full_path=${WORKSPACE}/${thread_name}_download
 			local_file_hash=`qshell qetag "${download_file_full_path}"`
 			if [[ "${local_file_hash}" == "${hash_in_list}" ]]; then
@@ -67,7 +70,7 @@ function verify_hash()
 	else
 		echo "OK $key $hash_in_list $local_file_hash"
 	fi
-	echo >&5
+	echo ${thread_name}>&5
 }
 
 function dispatch()
@@ -78,16 +81,16 @@ function dispatch()
 	exec 5<>${WORKSPACE}/fifo
 	rm -rf ${WORKSPACE}/fifo
 	
-	for ((i=1;i<=${TRHEADNUM};i++))
+	for ((i=1;i<=${THREADNUM};i++))
 	do
-		echo ;
+		echo $i
 	done >&5
 
 	cat $list | while read line
 	do
-		read -u5
+		read -u5 i
 		{
-			verify_hash "$thread_name" "$line"
+			verify_hash "$i" "$line"
 		} &
 	done
 	wait
@@ -111,12 +114,10 @@ function main()
 	[[ "$3" != "" ]] && DSTREGION=$3
 	[[ "$4" != "" ]] && DSTBUCKET=$4
 	
-	WORKSPACE="/data/tmp/stream_compare_${DSTUBKCET}_$$"
+	WORKSPACE="/data/tmp/stream_compare/${DSTBUCKET}"
 	rm -rf ${WORKSPACE}
 	mkdir -p ${WORKSPACE}
-	cp ${SRCLIST} ${WORKSPACE}/srclist
-	
-	dispatch "$$" "${WORKSPACE}/srclist"
+	dispatch "$$" "${SRCLIST}"
 	echo Done!
 	exit 0
 }
