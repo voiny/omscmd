@@ -28,6 +28,9 @@ function download()
 
 function exist_on_obs()
 {
+	#skip checking
+	echo 1
+	return 1
 	thread_name=$1
 	line=$2
 	result=1
@@ -66,9 +69,11 @@ function verify_hash()
 	fi
 	if [ "${result}" == "0" ];then
 		echo "$key $hash_in_list $local_file_hash" >> ${WORKSPACE}/${DSTBUCKET}-failure.log
-		echo "FAILED $key $hash_in_list $local_file_hash"
+		echo "$key" >> ${WORKSPACE}/${DSTBUCKET}-failure-retry.log
+		echo "FAILED thread: ${thread_name} bucket: ${DSTBUCKET} key: ${key} srchash: ${hash_in_list} dsthash: $local_file_hash}"
 	else
-		echo "OK $key $hash_in_list $local_file_hash"
+		echo "OK thread: ${thread_name} bucket: ${DSTBUCKET} key: ${key} srchash: ${hash_in_list} dsthash: ${local_file_hash}"
+		echo "$key" >> ${WORKSPACE}/${DSTBUCKET}-success.log
 	fi
 	echo ${thread_name}>&5
 }
@@ -117,7 +122,14 @@ function main()
 	WORKSPACE="/data/tmp/stream_compare/${DSTBUCKET}"
 	rm -rf ${WORKSPACE}
 	mkdir -p ${WORKSPACE}
+	echo "Options:" > ${WORKSPACE}/run.log
+	echo "${SRCLIST} ${THREADNUM} ${DSTREGION} ${DSTBUCKET}" > ${WORKSPACE}/run.log
+	echo "Strat Time:" >> ${WORKSPACE}/run.log
+	date >> ${WORKSPACE}/run.log
 	dispatch "$$" "${SRCLIST}"
+	echo "Finish Time:" >> ${WORKSPACE}/run.log
+	date >> ${WORKSPACE}/run.log
+	echo "Workspace: ${WORKSPACE}"
 	echo Done!
 	exit 0
 }
