@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SRCLIST=""
-THREADNUM=4
+THREADNUM=2
 DSTREGION="cn-north-1"
 DSTBUCKET=''
 WORKSPACE="/data/tmp/stream_compare"
@@ -51,9 +51,9 @@ function exist_on_obs()
 function verify_hash()
 {
 	thread_name=$1
-	list=$2
-	key=`echo $list | awk '{for (i=2;i<=NF-2;i++) printf("%s ", $i);}'|sed 's/ $//'`
-	hash_in_list=`echo $list | awk '{printf("%s", $NF);}'`
+	line=$2
+	key=`echo $line | awk '{for (i=2;i<=NF-2;i++) printf("%s ", $i);}'|sed 's/ $//'`
+	hash_in_list=`echo $line | awk '{printf("%s", $NF);}'`
 	local_file_hash=""
 	result=0
 	exist_on_obs_result=`exist_on_obs "${thread_name}" "${key}"`
@@ -68,13 +68,14 @@ function verify_hash()
 		fi
 	fi
 	if [ "${result}" == "0" ];then
-		echo "$key $hash_in_list $local_file_hash" >> ${WORKSPACE}/${DSTBUCKET}-failure.log
-		echo "$key" >> ${WORKSPACE}/${DSTBUCKET}-failure-retry.log
+		echo "${key} ${hash_in_list} ${local_file_hash}" >> ${WORKSPACE}/${DSTBUCKET}-failure.log
+		echo "${line}" >> ${WORKSPACE}/${DSTBUCKET}-failure-compapre-retry.log
+		echo "${key}" >> ${WORKSPACE}/${DSTBUCKET}-failure-migrate-retry.log
 		echo "FAILED thread: ${thread_name} bucket: ${DSTBUCKET} key: ${key} srchash: ${hash_in_list} dsthash: $local_file_hash}"
 	else
 		echo "OK thread: ${thread_name} bucket: ${DSTBUCKET} key: ${key} srchash: ${hash_in_list} dsthash: ${local_file_hash}"
-		echo "$key" >> ${WORKSPACE}/${DSTBUCKET}-success.log
 	fi
+	echo "${key}" >> ${WORKSPACE}/${DSTBUCKET}-process.log
 	echo ${thread_name}>&5
 }
 
@@ -104,7 +105,7 @@ function dispatch()
 
 function usage()
 {
-	echo "[command] SRCLIST THREADNUM DSTREGION DSTBUCKET"
+	echo "[command] SRCLIST THREADNUM DSTREGION DSTBUCKET WORKSPACE"
 }
 
 function main()
@@ -118,8 +119,9 @@ function main()
 	[[ "$2" != "" ]] && THREADNUM=$2
 	[[ "$3" != "" ]] && DSTREGION=$3
 	[[ "$4" != "" ]] && DSTBUCKET=$4
+	[[ "$5" != "" ]] && WORKSPACE=$5
 	
-	WORKSPACE="/data/tmp/stream_compare/${DSTBUCKET}"
+	WORKSPACE="${WORKSPACE}/${DSTBUCKET}"
 	rm -rf ${WORKSPACE}
 	mkdir -p ${WORKSPACE}
 	echo "Options:" > ${WORKSPACE}/run.log
@@ -134,4 +136,4 @@ function main()
 	exit 0
 }
 
-main $1 $2 $3 $4
+main $1 $2 $3 $4 $5
