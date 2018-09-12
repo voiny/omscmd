@@ -6,15 +6,15 @@ if [ "$1" == "" ];then
 fi
 
 PARENT_PATH=$1
-TENANT_NAME=''
-TENANT_PASSWORD=''
-DOMAIN_NAME=''
-PROJECT_ID=''
-DESCRIPTION_PREFIX=''
-SRCAK=''
-SRCSK=''
-DSTAK=''
-DSTSK=''
+TENANT_NAME='liuchang'
+TENANT_PASSWORD='Maasobs@123'
+DOMAIN_NAME='hujiangyun'
+PROJECT_ID='e9eb6fe5720b4037a5d2dafb3cfdc8a2'
+DESCRIPTION_PREFIX='DFS '
+SRCAK='A7oYOnu0dLa-TFw9AxOMf5YiRHzrAj-pwTkOv1xc'
+SRCSK='k0BRyceV9W4S3Kp6N0yng3txQMhj9vlAnkX1twdh'
+DSTAK='BOKXAGLKBAULZF7FSFOW'
+DSTSK='nMfydD43mEh6CesYAJyhWk5D18jffDNYm6Y0eneo'
 
 rm -rf /tmp/tmp_output
 
@@ -32,11 +32,13 @@ do
 	do
 		LINES=`cat ${PARENT_PATH}/${path}/${file}`
 		keys=''
+		OLDIFS="$IFS"
+		IFS=$'\n'
 		for line in ${LINES[@]}
 		do
 			keys=${keys}\"${line}\",
 		done
-		
+		IFS=$OLDIFS
 		keys=`echo ${keys}|sed 's/,$//'|sed 's/\\\\/\\\\\\\\/g'`
 		bucketname=${path}
 		description=${DESCRIPTION_PREFIX}${file}
