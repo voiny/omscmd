@@ -37,16 +37,50 @@ do
 			keys=${keys}\"${line}\",
 		done
 		
-		keys=`echo ${keys}|sed 's/,$//'`
+		keys=`echo ${keys}|sed 's/,$//'|sed 's/\\\\/\\\\\\\\/g'`
 		bucketname=${path}
 		description=${DESCRIPTION_PREFIX}${file}
-		domain=`echo ${bucketname}|sed "s/-/./g"|sed "s/.hjfile.cn/.r.hjfile.cn/g"`
-#		echo curl -H 'Content-Type:application/json' -H 'X-Auth-Token:${TOKEN}' --insecure -X POST --data '{"src_node":{"region":"z0","ak":"${SRCAK}","sk":"${SRCSK}","bucket":"${bucketname}","cloud_type":"Qiniu","object_key":{"path":"/","keys":["do_","e"]}},"thread_num":50,"enableKMS":false,"description":"${description}","dst_node":{"region":"cn-east-2","ak":"${DSTAK}","sk":"${DSTSK}","object_key":"/","bucket":"${bucketname}","cloud_type":"HEC"},"source_cdn":{"protocol":"https","domain":"${domain}","authentication_type":"QINIU_PRIVATE_AUTHENTICATION"},"task_type":"object","smnInfo":{"topicUrn":"urn:smn:cn-north-1:e9eb6fe5720b4037a5d2dafb3cfdc8a2:OCS-DFS-Migration","triggerConditions":["SUCCESS"],"language":"zh-cn"}}' https://oms.myhuaweicloud.com/v1/${PROJECT_ID}/objectstorage/task
+		domain=""
+		#Get domain
+		if [ "${domain}" == "" ];then
+			for i in `qshell domains ${bucketname}`
+			do
+				if [[ "$i" =~ "hjfile.cn" ]];then
+					domain=$i
+					break
+				fi
+			done
+		fi
+		if [ "${domain}" == "" ];then
+			for i in `qshell domains ${bucketname}`
+			do
+				if [[ "$i" =~ "clouddn.com" ]];then
+					echo > /dev/null
+				elif [[ "$i" =~ "qiniu" ]];then
+					echo > /dev/null
+				else
+					domain=$i
+				fi
+			done
+		fi
+		if [ "${domain}" == "" ];then
+			for i in `qshell domains ${bucketname}`
+			do
+				if [[ "$i" =~ "qiniu" ]];then
+					domain=$1
+				elif [[ "$i" =~ "clouddn.com" ]];then
+					domain=$i
+				else
+					domain=$i
+				fi
+			done
+		fi
 		echo Processing file: ${PARENT_PATH}/${path}/${file}
-		echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:${TOKEN}' --insecure -X POST --data '{\"src_node\":{\"region\":\"z0\",\"ak\":\"${SRCAK}\",\"sk\":\"${SRCSK}\",\"bucket\":\"${bucketname}\",\"cloud_type\":\"Qiniu\",\"object_key\":{\"path\":\"/\",\"keys\":[${keys}]}},\"thread_num\":50,\"enableKMS\":false,\"description\":\"${description}\",\"dst_node\":{\"region\":\"cn-east-2\",\"ak\":\"${DSTAK}\",\"sk\":\"${DSTSK}\",\"object_key\":\"/\",\"bucket\":\"${bucketname}\",\"cloud_type\":\"HEC\"},\"source_cdn\":{\"protocol\":\"https\",\"domain\":\"${domain}\",\"authentication_type\":\"QINIU_PRIVATE_AUTHENTICATION\"},\"task_type\":\"object\",\"smnInfo\":{\"topicUrn\":\"urn:smn:cn-north-1:e9eb6fe5720b4037a5d2dafb3cfdc8a2:OCS-DFS-Migration\",\"triggerConditions\":[\"SUCCESS\"],\"language\":\"zh-cn\"}}' https://oms.myhuaweicloud.com/v1/${PROJECT_ID}/objectstorage/task" > /tmp/tmp_run2.sh
+		echo domain: $domain
+		echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:${TOKEN}' --insecure -X POST --data '{\"src_node\":{\"region\":\"z0\",\"ak\":\"${SRCAK}\",\"sk\":\"${SRCSK}\",\"bucket\":\"${bucketname}\",\"cloud_type\":\"Qiniu\",\"object_key\":{\"path\":\"/\",\"keys\":[${keys}]}},\"thread_num\":50,\"enableKMS\":false,\"description\":\"${description}\",\"dst_node\":{\"region\":\"cn-east-2\",\"ak\":\"${DSTAK}\",\"sk\":\"${DSTSK}\",\"object_key\":\"/\",\"bucket\":\"${bucketname}\",\"cloud_type\":\"HEC\"},\"source_cdn\":{\"protocol\":\"https\",\"domain\":\"${domain}\",\"authentication_type\":\"QINIU_PRIVATE_AUTHENTICATION\"},\"task_type\":\"object\",\"smnInfo\":{\"topicUrn\":\"urn:smn:cn-north-1:e9eb6fe5720b4037a5d2dafb3cfdc8a2:OCS-DFS-Migration\",\"triggerConditions\":[\"SUCCESS\"],\"language\":\"zh-cn\"}}' https://oms.myhuaweicloud.com/v1/${PROJECT_ID}/objectstorage/task" > /tmp/tmp_run.sh
 		echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:\${TOKEN}' --insecure -X POST --data '{\"src_node\":{\"region\":\"z0\",\"ak\":\"${SRCAK}\",\"sk\":\"${SRCSK}\",\"bucket\":\"${bucketname}\",\"cloud_type\":\"Qiniu\",\"object_key\":{\"path\":\"/\",\"keys\":[${keys}]}},\"thread_num\":50,\"enableKMS\":false,\"description\":\"${description}\",\"dst_node\":{\"region\":\"cn-east-2\",\"ak\":\"${DSTAK}\",\"sk\":\"${DSTSK}\",\"object_key\":\"/\",\"bucket\":\"${bucketname}\",\"cloud_type\":\"HEC\"},\"source_cdn\":{\"protocol\":\"https\",\"domain\":\"${domain}\",\"authentication_type\":\"QINIU_PRIVATE_AUTHENTICATION\"},\"task_type\":\"object\",\"smnInfo\":{\"topicUrn\":\"urn:smn:cn-north-1:e9eb6fe5720b4037a5d2dafb3cfdc8a2:OCS-DFS-Migration\",\"triggerConditions\":[\"SUCCESS\"],\"language\":\"zh-cn\"}}' https://oms.myhuaweicloud.com/v1/${PROJECT_ID}/objectstorage/task"
 		#bash /tmp/tmp_run2.sh >> /tmp/tmp_output
 		read input
-		rm -rf /tmp/tmp_run2.sh
+		rm -rf /tmp/tmp_run.sh
 	done
 done
