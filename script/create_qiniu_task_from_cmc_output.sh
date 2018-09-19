@@ -108,26 +108,27 @@ do
 	#			fi
 	#		done
 	#	fi
+		echo
 		echo Processing file: ${PARENT_PATH}/${path}/${file}
 		echo domain: $domain
 		echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:${TOKEN}' --insecure -X POST --data '{\"src_node\":{\"region\":\"z0\",\"ak\":\"${SRCAK}\",\"sk\":\"${SRCSK}\",\"bucket\":\"${bucketname}\",\"cloud_type\":\"Qiniu\",\"object_key\":{\"path\":\"/\",\"keys\":[${keys}]}},\"thread_num\":50,\"enableKMS\":false,\"description\":\"${description}\",\"dst_node\":{\"region\":\"cn-east-2\",\"ak\":\"${DSTAK}\",\"sk\":\"${DSTSK}\",\"object_key\":\"/\",\"bucket\":\"${bucketname}\",\"cloud_type\":\"HEC\"},\"source_cdn\":{\"protocol\":\"https\",\"domain\":\"${domain}\",\"authentication_type\":\"QINIU_PRIVATE_AUTHENTICATION\"},\"task_type\":\"object\",\"smnInfo\":{\"topicUrn\":\"urn:smn:cn-north-1:e9eb6fe5720b4037a5d2dafb3cfdc8a2:OCS-DFS-Migration\",\"triggerConditions\":[\"SUCCESS\"],\"language\":\"zh-cn\"}}' https://oms.myhuaweicloud.com/v1/${PROJECT_ID}/objectstorage/task" > /tmp/tmp_run.sh
 		echo "curl -H 'Content-Type:application/json' -H 'X-Auth-Token:\${TOKEN}' --insecure -X POST --data '{\"src_node\":{\"region\":\"z0\",\"ak\":\"${SRCAK}\",\"sk\":\"${SRCSK}\",\"bucket\":\"${bucketname}\",\"cloud_type\":\"Qiniu\",\"object_key\":{\"path\":\"/\",\"keys\":[${keys}]}},\"thread_num\":50,\"enableKMS\":false,\"description\":\"${description}\",\"dst_node\":{\"region\":\"cn-east-2\",\"ak\":\"${DSTAK}\",\"sk\":\"${DSTSK}\",\"object_key\":\"/\",\"bucket\":\"${bucketname}\",\"cloud_type\":\"HEC\"},\"source_cdn\":{\"protocol\":\"https\",\"domain\":\"${domain}\",\"authentication_type\":\"QINIU_PRIVATE_AUTHENTICATION\"},\"task_type\":\"object\",\"smnInfo\":{\"topicUrn\":\"urn:smn:cn-north-1:e9eb6fe5720b4037a5d2dafb3cfdc8a2:OCS-DFS-Migration\",\"triggerConditions\":[\"SUCCESS\"],\"language\":\"zh-cn\"}}' https://oms.myhuaweicloud.com/v1/${PROJECT_ID}/objectstorage/task"
 		chmod 750 /tmp/tmp_run.sh
 		input_string=""
-		while [[ "${input_string}" != "y" ]];
-		do
+	#	while [[ "${input_string}" != "y" ]];
+	#	do
 			rm -rf /tmp/tmp_output_one
 			/tmp/tmp_run.sh > /tmp/tmp_output_one
 			cat /tmp/tmp_output_one
 			cat /tmp/tmp_output_one >> /tmp/tmp_output_all
 		#	read input_string
 			result2=`cat /tmp/tmp_output_one | jq ".task_name"`
-			if [[ "${result2}" == "" || "${result2}" == "null" ]]; then
-				echo failed, retrying...
-			else
-				input_string="y"
-			fi
-		done
+	#		if [[ "${result2}" == "" || "${result2}" == "null" ]]; then
+	#			echo failed, retrying...
+	#		else
+	#			input_string="y"
+	#		fi
+	#	done
 		rm -rf /tmp/tmp_run.sh
 	done
 done
