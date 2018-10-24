@@ -61,7 +61,7 @@ else
 	cd ${WORKSPACE}
 	wget https://bootstrap.pypa.io/get-pip.py
 	python get-pip.py
-	pip install awscli
+	pip install awscli=1.11.6
 	cd ${ORIGINAL_DIRECTORY}
 	./conf_awscli.sh
 fi
