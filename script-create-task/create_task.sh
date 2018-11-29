@@ -67,7 +67,6 @@ function create_task()
 	echo $enable_time_filter_object
 	migration_since=''
 	if [ $enable_time_filter_object == true ];then
-		echo 1
 		migration_time=$(getValueFromVars migration_since)
 		migration_since=`date -d "$migration_time" +%s`
 	else
